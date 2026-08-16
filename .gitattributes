@@ -1,0 +1,19 @@
+# 统一换行符与二进制声明
+* text=auto
+
+*.md    text eol=lf
+*.js    text eol=lf
+*.py    text eol=lf
+*.ps1   text eol=lf
+*.toml  text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+*.json  text eol=lf
+*.txt   text eol=lf
+
+# 二进制（不参与 diff/换行转换）
+*.pptx  binary
+*.tgz   binary
+*.png   binary
+*.jpg   binary
+*.zip   binary

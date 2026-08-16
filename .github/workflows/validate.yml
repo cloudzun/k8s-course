@@ -19,4 +19,4 @@ jobs:
         run: pip install python-pptx
 
       - name: Run validation
-        run: python tools/ci_validate.py
+        run: python ci/ci_validate.py

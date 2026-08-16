@@ -13,7 +13,7 @@
 ## 提交前必做
 
 - [ ] 修改完成后在 `CHANGELOG.md` 追加一条 `### vX.Y 标题`（做了什么 + 为什么 + 验证结果）
-- [ ] 所有 .md 代码围栏为偶数（`python tools/ci_validate.py` 会自动检查）
+- [ ] 所有 .md 代码围栏为偶数（`python ci/ci_validate.py` 会自动检查）
 - [ ] 命令/镜像改动已在真实集群实测（`tools/r.ps1.example` 模板，真实凭据不入库）
 - [ ] 三件套（教材/实验/课件）版本基线一致
 - [ ] 不触碰「决策红线」（见 `agent.md` 第 8 节）
@@ -23,7 +23,7 @@
 Push/PR 会自动运行 `tools/ci_validate.py`（fence 校验 + 敏感信息扫描 + PPTX 越界检查）。本地可先跑：
 
 ```bash
-python tools/ci_validate.py
+python ci/ci_validate.py
 ```
 
 ## 分支与提交

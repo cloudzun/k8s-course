@@ -778,3 +778,8 @@
   - 教材合集：https://zsyhjtnsa5.feishu.cn/docx/Ye0BdZfuGo5tsExLOAucRrxjn58
   - 实验手册合集：https://zsyhjtnsa5.feishu.cn/docx/Fp6odXRKmof6CHxkKy8cu4Zunpf
 - 重新生成合集：python tools/merge_docs.py（tools/ 本地目录）
+### v2.47 思考题参考答案（114 题全覆盖）（用户要求：补齐遗留项）
+- 新增 textbook/思考题参考答案.md（60KB，19 章 114 题，每题 2-4 句要点式答案，基于教材 v1.36 基线）
+- ch1-16 由并行子代理基于教材作答（workflow），ch17-19（Helm/WordPress/CKA）由主代理补写
+- 文档标注"讲师版资源"：建议课前自测/课上讲解使用，不随学员版直接分发
+- 其他遗留项盘点结论：课件思考题页（保留题目无答案，讲师口头）与 CKA 模拟题库（ch19 仅有指引无题库）为可选的后续项

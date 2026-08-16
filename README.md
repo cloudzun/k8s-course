@@ -70,6 +70,13 @@
 - **改教材/实验**：遵循对应 STYLE-GUIDE，完成后在 CHANGELOG 记一条
 - **定期更新教材**（如半年后对齐新 K8s 版本）：完整流程见 `agent.md` 的「教材更新指南」——包含版本基线快照、易过时内容清单、官方数据源、验证方法与交付检查清单
 
+## 分发与在线阅读
+
+- **飞书在线文档**（云空间「Kubernetes 实战课程」文件夹）：
+  - [教材合集（19 章）](https://zsyhjtnsa5.feishu.cn/docx/Ye0BdZfuGo5tsExLOAucRrxjn58)
+  - [实验手册合集（14 实验 · 93 Lab）](https://zsyhjtnsa5.feishu.cn/docx/Fp6odXRKmof6CHxkKy8cu4Zunpf)
+- **本地合集**：合集/Kubernetes-教材合集.md、合集/Kubernetes-实验手册合集.md（重新生成：python tools/merge_docs.py）
+
 ## 版本一致性原则
 
 教材 / 实验手册 / 课件三者必须保持**同一版本基线**：升级 K8s 版本时，先更新实验手册并集群实测（命令与输出为准），再同步教材概念与课件页面，最后更新 `课程大纲.md` / `00-实验镜像清单.md` / `CHANGELOG.md`。任何一处改动都要三件套联动，防止"教材讲了新版本、实验还是旧命令"的割裂。

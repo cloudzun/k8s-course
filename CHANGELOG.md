@@ -772,3 +772,9 @@
 - agent.md：重构为 9 节（新增第 7 节「教材更新指南」+ 第 8 节决策红线 + 第 9 节质量自检）
   - 教材更新指南内容：①版本基线快照表（v1.36 全套组件版本/镜像加速/考试权重）②按章易过时内容清单（19 章逐章核对点）③官方数据源清单（kubernetes.io/release notes/CKA 官网/第三方 releases）④六步更新流程（定基线→实验先行实测→改手册→改教材→改课件→联动收尾）⑤交付检查清单
   - 目的：半年后更新教材时，agent 有足够信息把更新做得准确（命令可复现、概念不过时、CKA 考点准确）
+### v2.46 教材/实验手册合并合集 + 飞书分发（用户要求）
+- tools/merge_docs.py：合并教材 19 章 → 合集/Kubernetes-教材合集.md（358KB，含封面+目录）；合并实验手册 14 个 → 合集/Kubernetes-实验手册合集.md（548KB，含封面+目录+镜像清单附录）；fence 全偶数
+- 已导入飞书云空间「Kubernetes 实战课程」文件夹（folder WP9bfdXFWlVkMXd6midc9TCTnib）：
+  - 教材合集：https://zsyhjtnsa5.feishu.cn/docx/Ye0BdZfuGo5tsExLOAucRrxjn58
+  - 实验手册合集：https://zsyhjtnsa5.feishu.cn/docx/Fp6odXRKmof6CHxkKy8cu4Zunpf
+- 重新生成合集：python tools/merge_docs.py（tools/ 本地目录）

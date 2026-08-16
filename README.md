@@ -1,7 +1,7 @@
 # Kubernetes 容器云原生实战课程（课程包根目录）
 
 ![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)
-![Validate](https://img.shields.io/badge/CI-validate-326CE5)
+![CI](https://github.com/cloudzun/k8s-course/actions/workflows/validate.yml/badge.svg)
 
 一套可直接授课的 Kubernetes 课程：**教材 + 实验手册 + 授课课件** 三件套一体化交付，基于 **Kubernetes v1.36** 在 3 节点真实集群上全实验实测。
 

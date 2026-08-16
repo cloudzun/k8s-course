@@ -1,0 +1,29 @@
+# ===== 敏感信息（不入库） =====
+# 集群 SSH 执行器（含真实公网 IP 与 root 密码）——使用 tools/r.ps1.example 模板
+tools/r.ps1
+# 原始飞书草稿（含历史服务器密码等敏感信息）
+misc/00-Kubernetes 核心知识.md
+
+# ===== 编辑器 / 系统 =====
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# ===== Node =====
+node_modules/
+npm-debug.log*
+
+# ===== 临时文件 =====
+*.tmp
+*.bak
+/tools/_toc_dump.txt

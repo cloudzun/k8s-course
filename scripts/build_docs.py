@@ -45,7 +45,19 @@ for f in sorted(glob.glob(os.path.join(ROOT, "manual", "*.md"))):
 # 4. 课程大纲
 copy_md(os.path.join(ROOT, "课程大纲.md"), DOCS)
 
-# 5. 自定义样式
+# 5. 网页课件（scripts/render_slides.js 产物 → docs/slides/）
+slides_src = os.path.join(ROOT, "build", "slides")
+if os.path.isdir(slides_src):
+    shutil.copytree(slides_src, os.path.join(DOCS, "slides"))
+else:
+    print("警告: build/slides 不存在，先运行 node scripts/render_slides.js")
+
+# 6. reveal.js 静态资源 → docs/assets/reveal/
+reveal_src = os.path.join(ROOT, "assets", "reveal")
+if os.path.isdir(reveal_src):
+    shutil.copytree(reveal_src, os.path.join(DOCS, "assets", "reveal"))
+
+# 7. 自定义样式
 os.makedirs(os.path.join(DOCS, "assets"), exist_ok=True)
 extra_css = """/* 站点自定义样式 */
 .md-typeset h1 { font-weight: 700; }

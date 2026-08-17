@@ -18,8 +18,18 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Python dependencies
         run: pip install mkdocs-material
+
+      - name: Install Node dependencies
+        run: npm install pptxgenjs@4
+
+      - name: Build slide HTML (reveal.js, same slide source as PPTX)
+        run: node scripts/render_slides.js
 
       - name: Sync docs from sources
         run: python scripts/build_docs.py

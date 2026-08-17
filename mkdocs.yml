@@ -113,3 +113,23 @@ nav:
       - 实验 13 Helm 交付: manual/13-helm-delivery.md
       - 实验 14 可观测性（可选）: manual/14-observability-optional.md
       - 实验镜像清单: manual/00-实验镜像清单.md
+  - 课件（网页版）:
+      - 第 1 章 容器与云原生基础: slides/ch01.md
+      - 第 2 章 Kubernetes 概述与架构: slides/ch02.md
+      - 第 3 章 集群安装与配置: slides/ch03.md
+      - 第 4 章 Pod 与容器: slides/ch04.md
+      - 第 5 章 工作负载控制器: slides/ch05.md
+      - 第 6 章 调度与 Pod 放置: slides/ch06.md
+      - 第 7 章 自动扩缩与资源治理: slides/ch07.md
+      - 第 8 章 配置管理: slides/ch08.md
+      - 第 9 章 服务、负载均衡与网络: slides/ch09.md
+      - 第 10 章 存储: slides/ch10.md
+      - 第 11 章 认证与授权: slides/ch11.md
+      - 第 12 章 准入与容器安全: slides/ch12.md
+      - 第 13 章 集群安全加固: slides/ch13.md
+      - 第 14 章 集群维护与运维: slides/ch14.md
+      - 第 15 章 可观测性: slides/ch15.md
+      - 第 16 章 故障排查与可靠性: slides/ch16.md
+      - 第 17 章 Helm 与 Kustomize: slides/ch17.md
+      - 第 18 章 综合实战: slides/ch18.md
+      - 第 19 章 CKA 考试指南: slides/ch19.md

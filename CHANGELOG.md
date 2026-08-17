@@ -788,3 +788,9 @@
 - mkdocs.yml：Material 主题（中文/深浅色/搜索/代码复制/mermaid 图表/表格/导航）
 - .github/workflows/pages.yml：push main 自动构建（mkdocs-material）并部署 gh-pages 分支
 - 本地验证：40 个 HTML 页、mermaid 注入、搜索索引正常
+### v2.49 同一套 slide 源码 → PPT + 网页课件 + MkDocs 站点（用户要求）
+- scripts/render_slides.js：HTML 渲染适配器（pptxgenjs 兼容接口 addSlide/addText/addShape/addTable），直接复用 ppt/chXX/slide-NN.js 与 common.js——同一份源码产出 reveal.js 网页课件（build/slides/chXX.html + MkDocs wrapper md）
+- reveal.js 6.0.1 vendor 到 assets/reveal/（站点自包含，国内可访问）
+- scripts/build_docs.py 并入课件与 reveal 资源；mkdocs.yml 导航新增「课件（网页版）」19 个条目
+- pages workflow：npm install pptxgenjs → node scripts/render_slides.js → build_docs.py → mkdocs build → gh-pages
+- 本地验证：19 章 412 页 HTML 渲染成功、站点构建 5.9s、相对路径正确

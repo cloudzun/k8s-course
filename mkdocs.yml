@@ -1,0 +1,115 @@
+# Kubernetes 容器云原生实战课程 - 文档站点配置
+site_name: Kubernetes 容器云原生实战课程
+site_description: 教材（19 章）+ 实验手册（14 实验 93 Lab）+ 课件，基于 K8s v1.36 真实集群实测，对接 CKA 认证
+site_url: https://cloudzun.github.io/k8s-course/
+repo_url: https://github.com/cloudzun/k8s-course
+repo_name: cloudzun/k8s-course
+edit_uri: ""
+
+theme:
+  name: material
+  language: zh
+  palette:
+    - scheme: default
+      primary: blue
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: 切换深色模式
+    - scheme: slate
+      primary: blue
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: 切换浅色模式
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+  - tables
+  - attr_list
+  - md_in_html
+
+extra_javascript:
+  - https://unpkg.com/mermaid@11/dist/mermaid.min.js
+
+extra_css:
+  - assets/extra.css
+
+extra:
+  generator: false
+
+copyright: Copyright &copy; 2026 · CC BY-NC-ND 4.0 · Kubernetes 容器云原生实战课程
+
+plugins:
+  - search
+
+nav:
+  - 首页: index.md
+  - 课程大纲: 课程大纲.md
+  - 教材:
+      - 第 1 章 容器与云原生基础: textbook/ch01-containers-and-cloud-native.md
+      - 第 2 章 Kubernetes 概述与架构: textbook/ch02-kubernetes-overview-and-architecture.md
+      - 第 3 章 集群安装与配置: textbook/ch03-cluster-installation-and-configuration.md
+      - 第 4 章 Pod 与容器: textbook/ch04-pod-and-containers.md
+      - 第 5 章 工作负载控制器: textbook/ch05-workload-controllers.md
+      - 第 6 章 调度与 Pod 放置: textbook/ch06-scheduling-and-pod-placement.md
+      - 第 7 章 自动扩缩与资源治理: textbook/ch07-autoscaling-and-resource-governance.md
+      - 第 8 章 配置管理: textbook/ch08-configuration-management.md
+      - 第 9 章 服务、负载均衡与网络: textbook/ch09-services-load-balancing-networking.md
+      - 第 10 章 存储: textbook/ch10-storage.md
+      - 第 11 章 认证与授权: textbook/ch11-authentication-and-authorization.md
+      - 第 12 章 准入与容器安全: textbook/ch12-admission-and-container-security.md
+      - 第 13 章 集群安全加固: textbook/ch13-cluster-security-hardening.md
+      - 第 14 章 集群维护与运维: textbook/ch14-cluster-maintenance-and-operations.md
+      - 第 15 章 可观测性: textbook/ch15-observability-monitoring-logging-events.md
+      - 第 16 章 故障排查与可靠性: textbook/ch16-troubleshooting-and-reliability.md
+      - 第 17 章 Helm 与 Kustomize: textbook/ch17-helm-and-kustomize.md
+      - 第 18 章 综合实战: textbook/ch18-comprehensive-practical-wordpress.md
+      - 第 19 章 CKA 考试指南: textbook/ch19-cka-exam-guide.md
+      - 教材↔实验映射: textbook/COURSE-OUTLINE.md
+      - 术语表: textbook/GLOSSARY.md
+      - 思考题参考答案: textbook/思考题参考答案.md
+  - 实验手册:
+      - 实验 01 集群安装: manual/01-cluster-installation.md
+      - 实验 02 Pod: manual/02-pod.md
+      - 实验 03 工作负载调度: manual/03-workload-scheduling.md
+      - 实验 04 资源调度: manual/04-resource-scheduling.md
+      - 实验 05 性能与监控: manual/05-performance-and-monitoring.md
+      - 实验 06 配置管理: manual/06-configmap-and-secret.md
+      - 实验 07 网络与服务: manual/07-network-and-service.md
+      - 实验 08 存储: manual/08-storage.md
+      - 实验 09 认证与授权: manual/09-authentication-and-authorization.md
+      - 实验 10 故障排查: manual/10-troubleshooting.md
+      - 实验 11 WordPress 综合演练: manual/11-wordpress-app.md
+      - 实验 12 集群维护: manual/12-cluster-maintenance.md
+      - 实验 13 Helm 交付: manual/13-helm-delivery.md
+      - 实验 14 可观测性（可选）: manual/14-observability-optional.md
+      - 实验镜像清单: manual/00-实验镜像清单.md

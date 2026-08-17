@@ -783,3 +783,8 @@
 - ch1-16 由并行子代理基于教材作答（workflow），ch17-19（Helm/WordPress/CKA）由主代理补写
 - 文档标注"讲师版资源"：建议课前自测/课上讲解使用，不随学员版直接分发
 - 其他遗留项盘点结论：课件思考题页（保留题目无答案，讲师口头）与 CKA 模拟题库（ch19 仅有指引无题库）为可选的后续项
+### v2.48 GitHub Pages 文档站点（用户要求：教材渲染成网页）
+- scripts/build_docs.py：从教材/实验/大纲/答案源同步生成 docs/（含 index 首页、assets/extra.css），docs/ 与 site/ 不入库
+- mkdocs.yml：Material 主题（中文/深浅色/搜索/代码复制/mermaid 图表/表格/导航）
+- .github/workflows/pages.yml：push main 自动构建（mkdocs-material）并部署 gh-pages 分支
+- 本地验证：40 个 HTML 页、mermaid 注入、搜索索引正常

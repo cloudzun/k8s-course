@@ -27,3 +27,7 @@ npm-debug.log*
 *.tmp
 *.bak
 /tools/_toc_dump.txt
+
+# GitHub Pages 站点（构建产物，由 scripts/build_docs.py 生成）
+docs/
+site/

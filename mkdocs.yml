@@ -1,7 +1,7 @@
 # Kubernetes 容器云原生实战课程 - 文档站点配置
 site_name: Kubernetes 容器云原生实战课程
 site_description: 教材（19 章）+ 实验手册（14 实验 93 Lab）+ 课件，基于 K8s v1.36 真实集群实测，对接 CKA 认证
-site_url: https://cloudzun.github.io/k8s-course/
+site_url: https://www.cloudzun.com/k8s-course/
 repo_url: https://github.com/cloudzun/k8s-course
 repo_name: cloudzun/k8s-course
 edit_uri: ""

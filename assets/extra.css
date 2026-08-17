@@ -1,0 +1,5 @@
+/* 站点自定义样式 */
+.md-typeset h1 { font-weight: 700; }
+.md-typeset table { font-size: 0.85em; }
+.md-typeset pre > code { max-height: 480px; overflow: auto; }
+.md-typeset .admonition { font-size: 0.9em; }

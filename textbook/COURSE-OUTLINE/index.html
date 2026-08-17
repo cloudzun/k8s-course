@@ -1,0 +1,3249 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="教材（19 章）+ 实验手册（14 实验 93 Lab）+ 课件，基于 K8s v1.36 真实集群实测，对接 CKA 认证">
+      
+      
+      
+        <link rel="canonical" href="https://www.cloudzun.com/k8s-course/textbook/COURSE-OUTLINE/">
+      
+      
+        <link rel="prev" href="../ch19-cka-exam-guide/">
+      
+      
+        <link rel="next" href="../GLOSSARY/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>教材↔实验映射 - Kubernetes 容器云原生实战课程</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#kubernetes" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="Kubernetes 容器云原生实战课程" class="md-header__button md-logo" aria-label="Kubernetes 容器云原生实战课程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Kubernetes 容器云原生实战课程
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              教材↔实验映射
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="切换深色模式"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换深色模式" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="切换浅色模式"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换浅色模式" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/cloudzun/k8s-course" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cloudzun/k8s-course
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Kubernetes 容器云原生实战课程" class="md-nav__button md-logo" aria-label="Kubernetes 容器云原生实战课程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Kubernetes 容器云原生实战课程
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/cloudzun/k8s-course" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cloudzun/k8s-course
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%AF%BE%E7%A8%8B%E5%A4%A7%E7%BA%B2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课程大纲
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    教材
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    教材
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch01-containers-and-cloud-native/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 1 章 容器与云原生基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch02-kubernetes-overview-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 2 章 Kubernetes 概述与架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch03-cluster-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 3 章 集群安装与配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch04-pod-and-containers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 4 章 Pod 与容器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch05-workload-controllers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 5 章 工作负载控制器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch06-scheduling-and-pod-placement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 6 章 调度与 Pod 放置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch07-autoscaling-and-resource-governance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 7 章 自动扩缩与资源治理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch08-configuration-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 8 章 配置管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch09-services-load-balancing-networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 9 章 服务、负载均衡与网络
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch10-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 10 章 存储
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch11-authentication-and-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 11 章 认证与授权
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch12-admission-and-container-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 12 章 准入与容器安全
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch13-cluster-security-hardening/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 13 章 集群安全加固
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch14-cluster-maintenance-and-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 14 章 集群维护与运维
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch15-observability-monitoring-logging-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 15 章 可观测性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch16-troubleshooting-and-reliability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 16 章 故障排查与可靠性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch17-helm-and-kustomize/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 17 章 Helm 与 Kustomize
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch18-comprehensive-practical-wordpress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 18 章 综合实战
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch19-cka-exam-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 19 章 CKA 考试指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    教材↔实验映射
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    教材↔实验映射
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-1-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第一部分：Kubernetes 基础（第 1-3 章）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第一部分：Kubernetes 基础（第 1-3 章）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 章 容器与云原生基础
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 章 Kubernetes 概述与架构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 章 集群安装与配置
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第二部分：工作负载（第 4-8 章）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第二部分：工作负载（第 4-8 章）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 章 Pod 与容器
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 章 工作负载控制器
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 6 章 调度器与调度策略
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 7 章 自动扩缩与资源治理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-configmap-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 8 章 配置管理（ConfigMap 与 Secret）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第三部分：网络与存储（第 9-10 章）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第三部分：网络与存储（第 9-10 章）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 9 章 服务、负载均衡与网络
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 10 章 存储
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第四部分：安全（第 11-13 章）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第四部分：安全（第 11-13 章）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 11 章 认证与授权
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 12 章 准入控制与容器安全
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 13 章 集群安全加固
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第五部分：集群运维（第 14-16 章）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第五部分：集群运维（第 14-16 章）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 14 章 集群日常管理与维护
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 15 章 可观测性：监控、日志与事件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 16 章 故障排查与可靠性
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#17-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第六部分：综合与扩展（第 17-19 章）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第六部分：综合与扩展（第 17-19 章）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#17-helm-kustomize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 17 章 Helm 与 Kustomize（应用打包与部署）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 18 章 综合实战：应用发布全流程
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#19-cka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 19 章 CKA 考试指南
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        课程安排建议
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        教材与实验手册映射速查
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    术语表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E6%80%9D%E8%80%83%E9%A2%98%E5%8F%82%E8%80%83%E7%AD%94%E6%A1%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    思考题参考答案
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验手册
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    实验手册
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/01-cluster-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 01 集群安装
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/02-pod/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 02 Pod
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/03-workload-scheduling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 03 工作负载调度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/04-resource-scheduling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 04 资源调度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/05-performance-and-monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 05 性能与监控
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/06-configmap-and-secret/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 06 配置管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/07-network-and-service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 07 网络与服务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/08-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 08 存储
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/09-authentication-and-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 09 认证与授权
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/10-troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 10 故障排查
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/11-wordpress-app/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 11 WordPress 综合演练
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/12-cluster-maintenance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 12 集群维护
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/13-helm-delivery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 13 Helm 交付
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/14-observability-optional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 14 可观测性（可选）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/00-%E5%AE%9E%E9%AA%8C%E9%95%9C%E5%83%8F%E6%B8%85%E5%8D%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验镜像清单
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课件（网页版）
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    课件（网页版）
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 1 章 容器与云原生基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 2 章 Kubernetes 概述与架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 3 章 集群安装与配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 4 章 Pod 与容器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 5 章 工作负载控制器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 6 章 调度与 Pod 放置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 7 章 自动扩缩与资源治理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 8 章 配置管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 9 章 服务、负载均衡与网络
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 10 章 存储
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 11 章 认证与授权
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 12 章 准入与容器安全
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 13 章 集群安全加固
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 14 章 集群维护与运维
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch15/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 15 章 可观测性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch16/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 16 章 故障排查与可靠性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch17/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 17 章 Helm 与 Kustomize
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch18/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 18 章 综合实战
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch19/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 19 章 CKA 考试指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-1-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第一部分：Kubernetes 基础（第 1-3 章）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第一部分：Kubernetes 基础（第 1-3 章）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 章 容器与云原生基础
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 章 Kubernetes 概述与架构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 章 集群安装与配置
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第二部分：工作负载（第 4-8 章）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第二部分：工作负载（第 4-8 章）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 章 Pod 与容器
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 章 工作负载控制器
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 6 章 调度器与调度策略
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 7 章 自动扩缩与资源治理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-configmap-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 8 章 配置管理（ConfigMap 与 Secret）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第三部分：网络与存储（第 9-10 章）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第三部分：网络与存储（第 9-10 章）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 9 章 服务、负载均衡与网络
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 10 章 存储
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第四部分：安全（第 11-13 章）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第四部分：安全（第 11-13 章）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 11 章 认证与授权
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 12 章 准入控制与容器安全
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 13 章 集群安全加固
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第五部分：集群运维（第 14-16 章）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第五部分：集群运维（第 14-16 章）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 14 章 集群日常管理与维护
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 15 章 可观测性：监控、日志与事件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 16 章 故障排查与可靠性
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#17-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第六部分：综合与扩展（第 17-19 章）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第六部分：综合与扩展（第 17-19 章）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#17-helm-kustomize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 17 章 Helm 与 Kustomize（应用打包与部署）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 18 章 综合实战：应用发布全流程
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#19-cka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 19 章 CKA 考试指南
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        课程安排建议
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        教材与实验手册映射速查
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="kubernetes">Kubernetes 课程教材大纲（与实验手册配套）<a class="headerlink" href="#kubernetes" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>课程定位</strong>：本课程面向<strong>Kubernetes 管理员</strong>，目标是让学生：① 理解 Kubernetes 的概念、组件与设计原理；② 独立完成集群的搭建与日常管理；③ 掌握容器化应用的编排、运维与管理；④ 具备通过 <strong>CKA（Certified Kubernetes Administrator）</strong> 认证考试的能力。</p>
+<p><strong>教材与实验手册的关系</strong>：教材是<strong>独立的理论体系</strong>（概念、组件、原理、设计决策），不是实验手册的说明文档；实验手册（实验 00-11）<strong>从属于教材</strong>，每章教材末尾的「实验演练」小节把本章重要知识点映射到实验手册对应 Lab——<strong>先学原理，再动手验证</strong>。</p>
+<p><strong>权威依据</strong>：本大纲对标 <a href="https://kubernetes.io/docs/concepts/">Kubernetes 官方文档 Concepts 体系</a> 与 <a href="https://training.linuxfoundation.org/certified-kubernetes-administrator-cka-program-changes/">CKA 考试大纲</a>（5 域权重：集群架构/安装/配置 25%、工作负载与调度 15%、服务与网络 20%、存储 10%、故障排查 30%），章节组织参考 <a href="https://www.manning.com/books/kubernetes-in-action-second-edition">《Kubernetes in Action》</a>（Marko Lukša）等权威教材的认知顺序。</p>
+</blockquote>
+<hr />
+<h2 id="kubernetes-1-3">第一部分：Kubernetes 基础（第 1-3 章）<a class="headerlink" href="#kubernetes-1-3" title="Permanent link">&para;</a></h2>
+<h3 id="1">第 1 章 容器与云原生基础<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：建立容器与云原生的前置认知，理解"为什么需要 Kubernetes"</li>
+<li><strong>要点</strong>：</li>
+<li>容器技术原理（命名空间、cgroups、镜像分层）；Docker 快速回顾（镜像/容器/仓库）</li>
+<li>容器化的痛点：单机编排、健康检查、网络、存储、多副本</li>
+<li>云原生概念与 CNCF 生态；编排器的对比（K8s/Docker Swarm/Mesos）</li>
+<li><strong>实验演练</strong>：无（前置知识，可使用 Docker 快速体验）</li>
+<li><strong>CKA 覆盖</strong>：—（基础铺垫）</li>
+</ul>
+<h3 id="2-kubernetes">第 2 章 Kubernetes 概述与架构<a class="headerlink" href="#2-kubernetes" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：理解 K8s 的核心概念与组件架构——<strong>本书最重要的基础章</strong></li>
+<li><strong>要点</strong>：</li>
+<li>核心概念：集群、节点、Pod、控制器、Service、命名空间；<strong>声明式 API 与期望状态</strong>（控制循环）</li>
+<li>控制面组件：kube-apiserver（API 入口）、etcd（状态存储）、kube-scheduler（调度）、kube-controller-manager（控制器）</li>
+<li>节点组件：kubelet、kube-proxy、容器运行时（CRI：containerd）</li>
+<li>对象模型：API 分组与版本、<code>kind/apiVersion/metadata/spec/status</code>、YAML 声明、kubectl 工作流（get/describe/apply/explain）</li>
+<li><strong>企业级命名与标签规范</strong>：K8s 官方推荐标签体系（app.kubernetes.io/*）、命名空间/对象命名规范</li>
+<li><strong>实验演练</strong>：实验手册（实验 01） 「手动安装」装集群后，用 <code>kubectl get pods -n kube-system</code> 观察各组件 Pod</li>
+<li><strong>CKA 覆盖</strong>：域 1（架构）</li>
+</ul>
+<h3 id="3">第 3 章 集群安装与配置<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：掌握用 kubeadm 从零搭建多节点集群，并能验证、维护</li>
+<li><strong>要点</strong>：</li>
+<li>安装前置：资源规划、系统准备（swap/内核参数/CRI）、网络连通性评估（镜像源选择）</li>
+<li><strong>容量规划与节点选型</strong>：控制面/Worker 规格决策树、CIDR 容量推演、etcd 性能基线（SSD/IOPS）、内核调优基线</li>
+<li>kubeadm 全流程：init → 加入 worker → 部署 CNI → 验证</li>
+<li>证书与 kubeconfig 体系（CA、admin.conf、节点证书）</li>
+<li>集群维护初探：节点管理、etcd 备份与恢复、kubeadm 升级（详见第 14 章深化）</li>
+<li><strong>实验演练</strong>：实验手册（实验 01） 「手动安装（10 步）」「附录 A-F」</li>
+<li><strong>CKA 覆盖</strong>：域 1（安装与配置，<strong>核心域</strong>）</li>
+</ul>
+<hr />
+<h2 id="4-8">第二部分：工作负载（第 4-8 章）<a class="headerlink" href="#4-8" title="Permanent link">&para;</a></h2>
+<h3 id="4-pod">第 4 章 Pod 与容器<a class="headerlink" href="#4-pod" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：理解 Pod 作为最小调度单元的设计，掌握容器配置的方方面面</li>
+<li><strong>要点</strong>：</li>
+<li>Pod 设计：单/多容器、共享网络与存储、sidecar 模式、<strong>Init 容器</strong></li>
+<li>容器配置：镜像与拉取策略、命令与参数、环境变量、标签与注解</li>
+<li>生命周期管理：<strong>探针</strong>（startup/liveness/readiness，含 gRPC 探针）、<strong>生命周期钩子</strong>（postStart/preStop）、优雅终止</li>
+<li><strong>SecurityContext 概览</strong>（安全基线）：runAsNonRoot/runAsUser、readOnlyRootFilesystem、capabilities——第 12 章深入</li>
+<li>资源模型：requests/limits（调度依据与运行时上限）、Downward API</li>
+<li><strong>实验演练</strong>：实验手册（实验 02） （全部 10 Lab）</li>
+<li><strong>CKA 覆盖</strong>：域 2（工作负载）</li>
+</ul>
+<h3 id="5">第 5 章 工作负载控制器<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：掌握各类控制器的原理与适用场景</li>
+<li><strong>要点</strong>：</li>
+<li>Deployment 与 ReplicaSet：副本管理、自愈、<strong>滚动更新与回滚</strong>（maxUnavailable/maxSurge）、扩缩容</li>
+<li>StatefulSet：有序部署、稳定标识与网络、有状态应用</li>
+<li>DaemonSet：每节点一个、系统组件模式</li>
+<li>Job 与 CronJob：一次性/定时任务、backoffLimit、并发策略</li>
+<li>控制器选择决策树（无状态/有状态/守护/任务）</li>
+<li><strong>生产发布策略设计</strong>：滚动更新调优、蓝绿部署、金丝雀发布、变更窗口与回滚标准</li>
+<li><strong>实验演练</strong>：实验手册（实验 03） （全部 6 Lab）</li>
+<li><strong>CKA 覆盖</strong>：域 2（工作负载与调度）</li>
+</ul>
+<h3 id="6">第 6 章 调度器与调度策略<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：理解调度器决策过程，掌握控制 Pod 落点的机制</li>
+<li><strong>要点</strong>：</li>
+<li>调度器原理：过滤（Filtering）与打分（Scoring）两阶段</li>
+<li>节点选择：nodeSelector → <strong>节点亲和/反亲和</strong>（required/preferred、matchExpressions）</li>
+<li>Pod 亲和/反亲和：topologyKey、多副本高可用分布</li>
+<li>污点与容忍：三种 effect（NoSchedule/NoExecute/PreferNoSchedule）、驱逐语义</li>
+<li>节点维护：cordon/uncordon/drain；<strong>PodDisruptionBudget</strong></li>
+<li><strong>Pod 拓扑分布约束（topologySpreadConstraints）</strong>：跨可用区/节点均衡打散的最佳实践；Descheduler 重调度概念</li>
+<li><strong>实验演练</strong>：实验手册（实验 04） （全部 7 Lab）</li>
+<li><strong>CKA 覆盖</strong>：域 2（调度）</li>
+</ul>
+<h3 id="7">第 7 章 自动扩缩与资源治理<a class="headerlink" href="#7" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：掌握水平/垂直扩缩与命名空间资源约束</li>
+<li><strong>要点</strong>：</li>
+<li>metrics-server 与指标链路；<strong>HPA</strong>（autoscaling/v2、指标类型、behavior）</li>
+<li>VPA 简介；ClusterAutoscaler 概念</li>
+<li>资源治理三层：requests/limits → <strong>LimitRange</strong>（单 Pod 约束）→ <strong>ResourceQuota</strong>（命名空间总量）</li>
+<li><strong>多租户治理体系</strong>：命名空间规划模型、四层隔离（逻辑/资源/网络/节点）、超卖策略；Pod 资源原地更新（1.27+）</li>
+<li><strong>实验演练</strong>：实验手册（实验 05） （全部 4 Lab）</li>
+<li><strong>CKA 覆盖</strong>：域 2/5（扩缩与资源相关）</li>
+</ul>
+<h3 id="8-configmap-secret">第 8 章 配置管理（ConfigMap 与 Secret）<a class="headerlink" href="#8-configmap-secret" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：掌握配置与敏感信息的外部化管理（承接第 4 章"容器怎么配置"，本课讲"配置怎么外部化"）</li>
+<li><strong>要点</strong>：</li>
+<li>ConfigMap：创建方式（字面量/文件/目录）、消费方式（卷挂载 vs 环境变量）、热更新语义</li>
+<li>Secret：类型（Opaque/tls/dockerconfigjson）、base64 本质（编码≠加密）、RBAC 保护</li>
+<li>与 Downward API 的对比（外部配置 vs Pod 自身元数据）</li>
+<li><strong>subPath 挂载陷阱警示</strong>（丧失热更新）；immutable 配置与热更新工具（Reloader）</li>
+<li>安全最佳实践：最小权限、etcd 加密（详见第 13 章）、外部密钥管理简介</li>
+<li><strong>实验演练</strong>：实验手册（实验 06） （5 Lab + Secret 类型 + Downward API 补充）</li>
+<li><strong>CKA 覆盖</strong>：域 1/2（配置相关）</li>
+</ul>
+<hr />
+<h2 id="9-10">第三部分：网络与存储（第 9-10 章）<a class="headerlink" href="#9-10" title="Permanent link">&para;</a></h2>
+<h3 id="9">第 9 章 服务、负载均衡与网络<a class="headerlink" href="#9" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：理解 Service 与网络模型，掌握服务暴露与网络隔离</li>
+<li><strong>要点</strong>：</li>
+<li>Service 原理：kube-proxy（iptables/IPVS）、Endpoints、ClusterIP/NodePort/LoadBalancer/ExternalName、headless</li>
+<li>集群 DNS 与名称解析（coredns、命名空间作用域）</li>
+<li><strong>Ingress</strong>：七层路由（host/path）、TLS 终止、ingress-nginx</li>
+<li><strong>NetworkPolicy</strong>：默认全通与白名单隔离、ingress/egress、CNI 支持（calico）</li>
+<li>CNI 与 Pod 网络模型（每 Pod 一 IP）</li>
+<li><strong>实验演练</strong>：实验手册（实验 07） （全部 6 Lab + 补充）</li>
+<li><strong>CKA 覆盖</strong>：域 3（服务与网络，<strong>核心域</strong>）</li>
+</ul>
+<h3 id="10">第 10 章 存储<a class="headerlink" href="#10" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：理解存储抽象层次，掌握持久化配置</li>
+<li><strong>要点</strong>：</li>
+<li>卷（Volume）类型：emptyDir/hostPath/configMap/secret 等</li>
+<li><strong>PV 与 PVC</strong>：生命周期（Provision/Bind/Use/Reclaim）、访问模式、回收策略</li>
+<li><strong>StorageClass</strong> 与动态供应：provisioner、默认类、WaitForFirstConsumer</li>
+<li>CSI 与共享存储（NFS/云盘）对比；存储选型</li>
+<li><strong>实验演练</strong>：实验手册（实验 08） （全部 4 Lab，StorageClass 在 Lab 4 安装）</li>
+<li><strong>CKA 覆盖</strong>：域 4（存储）</li>
+</ul>
+<hr />
+<h2 id="11-13">第四部分：安全（第 11-13 章）<a class="headerlink" href="#11-13" title="Permanent link">&para;</a></h2>
+<h3 id="11">第 11 章 认证与授权<a class="headerlink" href="#11" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：理解 K8s 安全模型的信任边界，掌握身份与权限管理——<strong>管理员核心技能</strong></li>
+<li><strong>要点</strong>：</li>
+<li>认证机制：用户证书（CA 签发）、ServiceAccount、Token（v1.24+ <code>create token</code>）、kubeconfig 多上下文</li>
+<li>授权模型：<strong>RBAC</strong>（Subject/Role/ClusterRole/Binding）、内置角色（view/edit/admin/cluster-admin）、最小权限设计</li>
+<li>认证 vs 授权：两个独立环节（能登录 ≠ 有权限）</li>
+<li>自定义 Role 的 rules 写法（apiGroups/resources/verbs）</li>
+<li><strong>实验演练</strong>：实验手册（实验 09） Lab 1-6（证书/SA/授权/dashboard 综合演练）</li>
+<li><strong>CKA 覆盖</strong>：域 1/2/3（安全贯穿，<strong>考试高频</strong>）</li>
+</ul>
+<h3 id="12">第 12 章 准入控制与容器安全<a class="headerlink" href="#12" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：理解"创建时把关"与"运行时加固"两道防线</li>
+<li><strong>要点</strong>：</li>
+<li>Admission Controllers 原理（Mutating/Validating、准入时机）</li>
+<li><strong>Pod Security Admission</strong>：privileged/baseline/restricted 三级、命名空间标签实施（PSP 已废弃声明）</li>
+<li><strong>Seccomp Profile</strong>（RuntimeDefault，restricted 强制项）；OPA Gatekeeper / Kyverno 策略即代码简述</li>
+<li><strong>SecurityContext</strong>：runAsUser/readOnlyRootFilesystem/capabilities、Pod 级与容器级</li>
+<li>镜像安全：私有仓库凭据（imagePullSecrets）、镜像签名简介、最小镜像原则</li>
+<li><strong>实验演练</strong>：实验手册（实验 09） Lab 7/8（SecurityContext/PSA）</li>
+<li><strong>CKA 覆盖</strong>：域 1/2/3</li>
+</ul>
+<h3 id="13">第 13 章 集群安全加固<a class="headerlink" href="#13" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：理解集群级信任链（证书、数据、节点），掌握加固手段</li>
+<li><strong>要点</strong>：</li>
+<li>集群 TLS 体系：组件证书、kubeconfig、<code>kubeadm certs renew</code> 续期</li>
+<li>etcd 安全：TLS、备份加密（静态加密 EncryptionConfiguration）</li>
+<li>kubelet 认证授权（Webhook 模式）；ServiceAccount 令牌安全</li>
+<li><strong>API Server 审计日志</strong>：Audit Policy 配置与四个阶段（RequestReceived/ResponseStarted/ResponseComplete/Panic）、审计存储与合规用途</li>
+<li>密钥安全：base64 ≠ 加密、RBAC 保护 Secret、NetworkPolicy 网络隔离深化</li>
+<li><strong>实验演练</strong>：实验手册（实验 09） Lab 1/7/8/9（证书体系/SC/PSA/集群加固）</li>
+<li><strong>CKA 覆盖</strong>：域 1/3</li>
+</ul>
+<hr />
+<h2 id="14-16">第五部分：集群运维（第 14-16 章）<a class="headerlink" href="#14-16" title="Permanent link">&para;</a></h2>
+<h3 id="14">第 14 章 集群日常管理与维护<a class="headerlink" href="#14" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：掌握生产集群运维的<strong>完整流程</strong>（从"命令"到"流程"）</li>
+<li><strong>要点</strong>：</li>
+<li>节点管理：cordon/drain/uncordon、污点隔离、维护窗口；<strong>PDB 保护业务</strong></li>
+<li>集群升级：完整流程（排空→升级→验证→回滚预案、控制面先行、worker 逐台）、版本兼容窗口</li>
+<li><strong>etcd 备份策略</strong>：备份周期与保留、异地存放、<strong>恢复演练</strong>（何时需要恢复、恢复会丢什么）</li>
+<li><strong>高可用概念</strong>：控制面多 master（--control-plane-endpoint）、etcd Raft（为何奇数节点）</li>
+<li>命名空间与配额治理、对象清理</li>
+<li><strong>应用级灾备（Velero）</strong>；运维日历（日/周/月/季巡检项）；Addons 升级管理；Cluster Autoscaler/Karpenter 节点自动扩缩</li>
+<li><strong>实验演练</strong>：实验手册（实验 12） （全部 4 Lab，Lab 4 可选·进阶）</li>
+<li><strong>CKA 覆盖</strong>：域 1/5</li>
+</ul>
+<h3 id="15">第 15 章 可观测性：监控、日志与事件<a class="headerlink" href="#15" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：建立"指标 + 日志 + 事件"三支柱的可观测性体系</li>
+<li><strong>要点</strong>：</li>
+<li>指标：metrics-server、kubectl top、Prometheus/Grafana 体系概念（不深挖 PromQL）</li>
+<li>日志：kubectl logs、日志收集模式（sidecar / daemonset）、Kubernetes 日志架构</li>
+<li>事件：kubectl get events、审计日志概念</li>
+<li>生产可观测性怎么落地（指标告警、日志聚合、排障入口）</li>
+<li><strong>实验演练</strong>：实验手册（实验 05） Lab 1/2 + 实验 14（可选·进阶：Prometheus 监控体系）</li>
+<li><strong>CKA 覆盖</strong>：域 5</li>
+</ul>
+<h3 id="16">第 16 章 故障排查与可靠性<a class="headerlink" href="#16" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：建立分层排障方法论与可靠性工程思维（<strong>CKA 最高权重域 30%</strong>）</li>
+<li><strong>要点</strong>：</li>
+<li><strong>分层排障框架</strong>：节点层 → Pod 层 → 容器层 → 网络层 → 存储层，每层的关键命令与判断依据</li>
+<li><strong>证据链思维</strong>：describe（事件）→ logs（输出）→ events（全局），从现象定位根因</li>
+<li>可靠性工程：滚动更新策略调优（maxUnavailable/maxSurge）、优雅终止深化（preStop + grace period）、<strong>PDB 保护计算</strong>（ALLOWED DISRUPTIONS）</li>
+<li><strong>主动演练</strong>：杀节点/杀 Pod/断网络验证自愈</li>
+<li><strong>SRE 运营规范</strong>：SLO/SLI/Error Budget、故障复盘（Post-mortem）模板；临时容器（kubectl debug）排障</li>
+<li><strong>实验演练</strong>：实验手册（实验 10） （8 Lab，含可靠性演练）</li>
+<li><strong>CKA 覆盖</strong>：域 5（故障排查，<strong>30% 权重</strong>）</li>
+</ul>
+<hr />
+<h2 id="17-19">第六部分：综合与扩展（第 17-19 章）<a class="headerlink" href="#17-19" title="Permanent link">&para;</a></h2>
+<h3 id="17-helm-kustomize">第 17 章 Helm 与 Kustomize（应用打包与部署）<a class="headerlink" href="#17-helm-kustomize" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：掌握企业级应用交付工具链——用 Helm 打包/发布应用，用 Kustomize 做环境化定制</li>
+<li><strong>要点</strong>：</li>
+<li>Helm 核心模型：Chart（打包）→ Release（实例）→ Repository（仓库）；模板化与 values 覆盖</li>
+<li>常用命令：<code>helm install/upgrade/rollback/uninstall</code>、<code>helm repo add</code>、<code>helm search</code></li>
+<li>Kustomize：<code>kustomization.yaml</code>、overlay 环境定制（与 Helm 的定位差异）</li>
+<li>Chart 结构解剖（Chart.yaml/values.yaml/templates）；生产发布流程（Chart 版本化、CI/CD 集成）</li>
+<li>CRD 与 Operator 模式展望（扩展集群能力：自定义资源 + 控制器，如 cert-manager/Prometheus Operator）——<strong>见第 18 章末展望小节</strong></li>
+<li><strong>实验演练</strong>：实验手册（实验 13） （全部 3 Lab：Chart 打包/发布/升级/回滚 + values 多环境 + Kustomize）</li>
+<li><strong>CKA 覆盖</strong>：域 1/2（辅助；Helm 是 CKAD 考点）</li>
+</ul>
+<h3 id="18">第 18 章 综合实战：应用发布全流程<a class="headerlink" href="#18" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：综合运用全书知识发布真实应用（WordPress 案例）</li>
+<li><strong>要点</strong>：</li>
+<li>应用架构设计（数据/应用分离、无状态前端 + <strong>有状态数据库用 StatefulSet</strong>）</li>
+<li>全链路：Ingress → Service → Deployment（HPA）→ PVC → Secret</li>
+<li>持久化验证、扩展验证、域名发布验证</li>
+<li><strong>展望：CRD 与 Operator 模式</strong>——自定义资源扩展集群、Operator = CRD + 控制器（cert-manager/Prometheus Operator 实例）</li>
+<li><strong>实验演练</strong>：实验手册（实验 11） （全部 6 Lab，Lab 6 生产化可选·进阶）</li>
+<li><strong>CKA 覆盖</strong>：综合运用</li>
+</ul>
+<h3 id="19-cka">第 19 章 CKA 考试指南<a class="headerlink" href="#19-cka" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>目标</strong>：备考冲刺与考试策略</li>
+<li><strong>要点</strong>：</li>
+<li>考试环境与题型（终端实操、kubectl 快捷键、不可用外网）</li>
+<li>五大域考点速查表（命令/对象/场景）</li>
+<li>时间管理与答题策略（先易后难、dry-run 技巧、上下文切换、jsonpath 速查）</li>
+<li>模拟演练与常见陷阱（版本差异、镜像源、对象参数变化）</li>
+<li><strong>实验演练</strong>：全书 Lab 按 CKA 域重刷 + 模拟题</li>
+<li><strong>CKA 覆盖</strong>：全部 5 域</li>
+</ul>
+<hr />
+<h2 id="_1">课程安排建议<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>章节</th>
+<th>建议学时（理论+实验）</th>
+<th>CKA 域覆盖</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>一、基础</td>
+<td>第 1-3 章</td>
+<td>8 学时 + 实验手册（实验 01）</td>
+<td>域 1</td>
+</tr>
+<tr>
+<td>二、工作负载</td>
+<td>第 4-8 章</td>
+<td>12 学时 + 实验手册 02/03/07/09/06</td>
+<td>域 2</td>
+</tr>
+<tr>
+<td>三、网络与存储</td>
+<td>第 9-10 章</td>
+<td>8 学时 + 实验手册（实验 07/08）</td>
+<td>域 3、域 4</td>
+</tr>
+<tr>
+<td>四、安全</td>
+<td>第 11-13 章</td>
+<td>8 学时 + 实验手册（实验 09）</td>
+<td>域 1/2/3</td>
+</tr>
+<tr>
+<td>五、集群运维</td>
+<td>第 14-16 章</td>
+<td>8 学时 + 实验手册（实验 12/10）</td>
+<td>域 1/5</td>
+</tr>
+<tr>
+<td>六、综合与扩展</td>
+<td>第 17-19 章</td>
+<td>8 学时 + 实验手册（实验 13/实验 14 可选/实验 11）</td>
+<td>全部 + CKAD 部分</td>
+</tr>
+</tbody>
+</table>
+<p><strong>合计</strong>：约 52 学时（理论 24 + 实验 28）+ 课后 CKA 模拟刷题</p>
+<hr />
+<h2 id="_2">教材与实验手册映射速查<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>教材章节</th>
+<th>配套实验手册演练</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 2 章 架构</td>
+<td>实验 01 （装完观察组件）</td>
+</tr>
+<tr>
+<td>第 3 章 安装</td>
+<td>实验 01 全部 + 附录 A-F</td>
+</tr>
+<tr>
+<td>第 4 章 Pod</td>
+<td>实验 02 （12 Lab）</td>
+</tr>
+<tr>
+<td>第 5 章 控制器</td>
+<td>实验 03 （8 Lab）</td>
+</tr>
+<tr>
+<td>第 6 章 调度</td>
+<td>实验 04 （9 Lab）</td>
+</tr>
+<tr>
+<td>第 7 章 扩缩与资源</td>
+<td>实验 05 （6 Lab）</td>
+</tr>
+<tr>
+<td>第 8 章 配置管理</td>
+<td>实验 06 （8 Lab + 补充）</td>
+</tr>
+<tr>
+<td>第 9 章 网络</td>
+<td>实验 07 （7 Lab + 补充）</td>
+</tr>
+<tr>
+<td>第 10 章 存储</td>
+<td>实验 08 （7 Lab）</td>
+</tr>
+<tr>
+<td>第 11 章 认证授权</td>
+<td>实验 09 Lab 1-6</td>
+</tr>
+<tr>
+<td>第 12 章 准入与容器安全</td>
+<td>实验 09 Lab 7/8</td>
+</tr>
+<tr>
+<td>第 13 章 集群加固</td>
+<td>实验 09 Lab 1/7/8/9</td>
+</tr>
+<tr>
+<td>第 14 章 日常运维</td>
+<td>实验 12 （4 Lab）</td>
+</tr>
+<tr>
+<td>第 15 章 可观测性</td>
+<td>实验 05 Lab 1/2 + 实验 14 （可选·进阶）</td>
+</tr>
+<tr>
+<td>第 16 章 排障与可靠性</td>
+<td>实验 10 （8 Lab）</td>
+</tr>
+<tr>
+<td>第 17 章 Helm 与 Kustomize</td>
+<td>实验 13 （全部 3 Lab）</td>
+</tr>
+<tr>
+<td>第 18 章 综合</td>
+<td>实验 11 （全部 6 Lab）</td>
+</tr>
+<tr>
+<td>第 19 章 备考</td>
+<td>全书按 CKA 域重刷</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<blockquote>
+<p><strong>说明</strong>：本大纲为总纲，教材正文按此展开（每章含：学习目标 → 概念讲解 → 原理图解 → 设计决策 → 最佳实践 → 实验演练指引 → CKA 考点标注 → 思考题）。后续可按章节逐步编写教材正文。</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 · CC BY-NC-ND 4.0 · Kubernetes 容器云原生实战课程
+    </div>
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "navigation.expand", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@11/dist/mermaid.min.js"></script>
+      
+    
+  </body>
+</html>

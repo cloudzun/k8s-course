@@ -1,0 +1,3232 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="教材（19 章）+ 实验手册（14 实验 93 Lab）+ 课件，基于 K8s v1.36 真实集群实测，对接 CKA 认证">
+      
+      
+      
+        <link rel="canonical" href="https://www.cloudzun.com/k8s-course/textbook/ch09-services-load-balancing-networking/">
+      
+      
+        <link rel="prev" href="../ch08-configuration-management/">
+      
+      
+        <link rel="next" href="../ch10-storage/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>第 9 章 服务、负载均衡与网络 - Kubernetes 容器云原生实战课程</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#9" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="Kubernetes 容器云原生实战课程" class="md-header__button md-logo" aria-label="Kubernetes 容器云原生实战课程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Kubernetes 容器云原生实战课程
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第 9 章 服务、负载均衡与网络
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="切换深色模式"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换深色模式" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="切换浅色模式"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换浅色模式" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/cloudzun/k8s-course" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cloudzun/k8s-course
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Kubernetes 容器云原生实战课程" class="md-nav__button md-logo" aria-label="Kubernetes 容器云原生实战课程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Kubernetes 容器云原生实战课程
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/cloudzun/k8s-course" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cloudzun/k8s-course
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%AF%BE%E7%A8%8B%E5%A4%A7%E7%BA%B2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课程大纲
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    教材
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    教材
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch01-containers-and-cloud-native/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 1 章 容器与云原生基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch02-kubernetes-overview-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 2 章 Kubernetes 概述与架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch03-cluster-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 3 章 集群安装与配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch04-pod-and-containers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 4 章 Pod 与容器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch05-workload-controllers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 5 章 工作负载控制器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch06-scheduling-and-pod-placement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 6 章 调度与 Pod 放置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch07-autoscaling-and-resource-governance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 7 章 自动扩缩与资源治理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch08-configuration-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 8 章 配置管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 9 章 服务、负载均衡与网络
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 9 章 服务、负载均衡与网络
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        学习目标
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#91" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 网络全景：四个层次
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#92-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Service：稳定入口的完整原理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.2 Service：稳定入口的完整原理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#921-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2.1 为什么需要 Service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#922-endpoints-kube-proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2.2 机制：Endpoints + kube-proxy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#923-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2.3 Service 的四种类型
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#924-headless-service-ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2.4 headless Service：不要虚拟 IP
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#925" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2.5 多端口与端口命名
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#93-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 集群 DNS：名字解析
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.3 集群 DNS：名字解析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#931-coredns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3.1 coredns 的角色
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#932" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3.2 解析规则
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#933" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3.3 排障视角
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#94-ingress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 Ingress：七层入口
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.4 Ingress：七层入口">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#941-ingress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.1 为什么需要 Ingress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#942" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.2 原理：对象 + 控制器
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#943-host-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.3 路由规则：host 与 path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#944-tls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.4 TLS 终止
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#945-ingress-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.5 Ingress 与 Service 的分工（易混点）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#946-gateway-apiingress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.6 展望：Gateway API（Ingress 的继任者）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#95-networkpolicy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5 NetworkPolicy：网络隔离
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.5 NetworkPolicy：网络隔离">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#951" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5.1 默认全通（现状与风险）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#952" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5.2 原理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#953" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5.3 典型策略设计
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#954-cni" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5.4 依赖 CNI（重要）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#96" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6 综合走查：外部用户访问应用的完整路径
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#97" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.7 实验演练指引
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        本章小结
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        思考题
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch10-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 10 章 存储
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch11-authentication-and-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 11 章 认证与授权
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch12-admission-and-container-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 12 章 准入与容器安全
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch13-cluster-security-hardening/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 13 章 集群安全加固
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch14-cluster-maintenance-and-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 14 章 集群维护与运维
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch15-observability-monitoring-logging-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 15 章 可观测性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch16-troubleshooting-and-reliability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 16 章 故障排查与可靠性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch17-helm-and-kustomize/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 17 章 Helm 与 Kustomize
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch18-comprehensive-practical-wordpress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 18 章 综合实战
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch19-cka-exam-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 19 章 CKA 考试指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COURSE-OUTLINE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    教材↔实验映射
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    术语表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E6%80%9D%E8%80%83%E9%A2%98%E5%8F%82%E8%80%83%E7%AD%94%E6%A1%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    思考题参考答案
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验手册
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    实验手册
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/01-cluster-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 01 集群安装
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/02-pod/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 02 Pod
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/03-workload-scheduling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 03 工作负载调度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/04-resource-scheduling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 04 资源调度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/05-performance-and-monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 05 性能与监控
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/06-configmap-and-secret/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 06 配置管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/07-network-and-service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 07 网络与服务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/08-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 08 存储
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/09-authentication-and-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 09 认证与授权
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/10-troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 10 故障排查
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/11-wordpress-app/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 11 WordPress 综合演练
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/12-cluster-maintenance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 12 集群维护
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/13-helm-delivery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 13 Helm 交付
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/14-observability-optional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 14 可观测性（可选）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/00-%E5%AE%9E%E9%AA%8C%E9%95%9C%E5%83%8F%E6%B8%85%E5%8D%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验镜像清单
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课件（网页版）
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    课件（网页版）
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 1 章 容器与云原生基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 2 章 Kubernetes 概述与架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 3 章 集群安装与配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 4 章 Pod 与容器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 5 章 工作负载控制器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 6 章 调度与 Pod 放置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 7 章 自动扩缩与资源治理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 8 章 配置管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 9 章 服务、负载均衡与网络
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 10 章 存储
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 11 章 认证与授权
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 12 章 准入与容器安全
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 13 章 集群安全加固
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 14 章 集群维护与运维
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch15/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 15 章 可观测性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch16/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 16 章 故障排查与可靠性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch17/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 17 章 Helm 与 Kustomize
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch18/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 18 章 综合实战
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch19/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 19 章 CKA 考试指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        学习目标
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#91" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 网络全景：四个层次
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#92-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Service：稳定入口的完整原理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.2 Service：稳定入口的完整原理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#921-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2.1 为什么需要 Service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#922-endpoints-kube-proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2.2 机制：Endpoints + kube-proxy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#923-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2.3 Service 的四种类型
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#924-headless-service-ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2.4 headless Service：不要虚拟 IP
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#925" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2.5 多端口与端口命名
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#93-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 集群 DNS：名字解析
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.3 集群 DNS：名字解析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#931-coredns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3.1 coredns 的角色
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#932" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3.2 解析规则
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#933" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3.3 排障视角
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#94-ingress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 Ingress：七层入口
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.4 Ingress：七层入口">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#941-ingress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.1 为什么需要 Ingress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#942" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.2 原理：对象 + 控制器
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#943-host-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.3 路由规则：host 与 path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#944-tls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.4 TLS 终止
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#945-ingress-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.5 Ingress 与 Service 的分工（易混点）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#946-gateway-apiingress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.6 展望：Gateway API（Ingress 的继任者）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#95-networkpolicy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5 NetworkPolicy：网络隔离
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.5 NetworkPolicy：网络隔离">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#951" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5.1 默认全通（现状与风险）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#952" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5.2 原理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#953" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5.3 典型策略设计
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#954-cni" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5.4 依赖 CNI（重要）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#96" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6 综合走查：外部用户访问应用的完整路径
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#97" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.7 实验演练指引
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        本章小结
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        思考题
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="9">第 9 章 服务、负载均衡与网络<a class="headerlink" href="#9" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>配套实验手册：《Kubernetes 实验手册》（manual/ 目录）<strong>实验 07「网络和服务」</strong>（6 个 Lab + 补充：Service 三类型/headless/Ingress/NetworkPolicy/多端口/ExternalName）。本章是 <strong>CKA 核心域（域 3，20%）</strong>——讲清楚"流量怎么进集群、怎么到 Pod、怎么隔离"的完整机制。</p>
+</blockquote>
+<h2 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>学完本章，你应该能够：</p>
+<ol>
+<li>画出集群的四个网络层次（节点/Pod/Service/集群外）及各自网段</li>
+<li>解释 Service 的完整机制：Endpoints 选择后端 + kube-proxy 写入转发规则（iptables/IPVS）</li>
+<li>对比 Service 的四种类型与 headless，说出各自适用场景</li>
+<li>解释集群 DNS（coredns）的解析规则与命名空间作用域</li>
+<li>解释 Ingress 的原理（对象 + 控制器 + host/path 路由 + TLS 终止），说出它与 Service 的分工</li>
+<li>解释 NetworkPolicy 的隔离原理（默认全通 → 白名单）与典型策略设计</li>
+<li>走查"外部用户 → 应用 Pod"的完整路径（哪个组件做了什么）</li>
+</ol>
+<hr />
+<h2 id="91">9.1 网络全景：四个层次<a class="headerlink" href="#91" title="Permanent link">&para;</a></h2>
+<p>Kubernetes 集群里有四个网络层次，各司其职（第 3 章规划过网段）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>① 节点网络（物理）   192.168.0.0/24   机器真实 IP，节点互通
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>② Pod 网络（虚拟）   10.244.0.0/16    每个 Pod 一个 IP（CNI 分配）
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>③ Service 网络（虚拟）10.96.0.0/12     Service 虚拟 IP（ClusterIP）
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>④ 集群外访问         节点 IP:端口 / 域名 → 负载均衡器 / Ingress
+</code></pre></div>
+<blockquote>
+<p>补充：<strong>IPv6 双栈</strong>——现代 Kubernetes 支持集群同时跑 IPv4 + IPv6（<code>--pod-cidrs</code> 配双网段、Service <code>--pod-cidrs</code>）。对刚接触 K8s 的读者，知道"双栈是选项、默认单栈 IPv4"即可；云环境 IPv6 出口是独立能力。</p>
+</blockquote>
+<p><strong>② Pod 网络的关键模型（第 2 章回顾）</strong>：<strong>每个 Pod 一个 IP</strong>（属于 Pod 沙箱），Pod 之间直接互通（不需要 NAT）——由 CNI 插件实现（第 3 章装的 Calico：BGP 三层路由）。<strong>没有 CNI，Pod 无 IP、节点不 Ready</strong>（第 3 章验证过）。</p>
+<hr />
+<h2 id="92-service">9.2 Service：稳定入口的完整原理<a class="headerlink" href="#92-service" title="Permanent link">&para;</a></h2>
+<h3 id="921-service">9.2.1 为什么需要 Service<a class="headerlink" href="#921-service" title="Permanent link">&para;</a></h3>
+<p>Pod IP 是<strong>临时</strong>的（重建即变），且多副本时"该访问哪个 IP"——Service 提供<strong>稳定虚拟 IP + DNS 名</strong>（第 2 章概念，本章讲机制）。</p>
+<h3 id="922-endpoints-kube-proxy">9.2.2 机制：Endpoints + kube-proxy<a class="headerlink" href="#922-endpoints-kube-proxy" title="Permanent link">&para;</a></h3>
+<p>Service 的负载均衡由两个部件协作：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>① Endpoints（谁在服务）：控制器把"selector 匹配的 Pod IP:端口"写进 Endpoints 对象
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>   Service web → selector app=web → Endpoints: [10.244.1.5:80, 10.244.2.8:80, 10.244.3.2:80]
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>② kube-proxy（怎么转发）：每个节点上把转发规则写进内核
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>   发往 ClusterIP:80 的流量 → 随机/轮询选一个 Endpoints → DNAT 到 Pod IP
+</code></pre></div>
+<p><strong>iptables 与 IPVS 两种实现</strong>：</p>
+<ul>
+<li><strong>iptables 模式</strong>（默认）：为每个 Service/Endpoints 生成 iptables 规则链；每个请求在规则里<strong>随机命中</strong>一个后端（随机算法，不是加权轮询）</li>
+<li><strong>IPVS 模式</strong>：内核级负载均衡（LVS），支持 rr/wrr/lc 等算法，规则更少、性能更好（大量 Service 时明显）</li>
+</ul>
+<!-- 原 ASCII 图已转为 Mermaid -->
+<pre class="mermaid"><code>flowchart LR
+    app["应用请求\nhttp://web-svc:80\n（ClusterIP 10.96.0.10）"] --&gt; kernel["节点内核\n（iptables/IPVS 规则）"]
+    kernel --&gt;|"规则匹配 Service IP"| dnat["DNAT 改写目标\n→ 后端 Pod IP\n（10.244.2.8:80）"]
+    dnat --&gt; pod["Pod 容器"]
+
+    style app fill:#FFF3E0,stroke:#E08A3C
+    style kernel fill:#E8F4FD,stroke:#4A90D9
+    style pod fill:#E8F8E8,stroke:#5BA85B</code></pre>
+<blockquote>
+<p>读图要点：<strong>规则由 kube-proxy 提前写进内核，转发发生在内核里</strong>——请求路径完全不经过 kube-proxy 进程；kube-proxy 只是"规则的搬运工"。</p>
+<p><strong>核心认知</strong>（易错点）：kube-proxy <strong>不是代理进程</strong>——流量不经过它（它只负责把规则写进内核）；它也不做服务发现（发现靠 DNS）。<strong>"规则写内核、转发在内核"是性能的关键</strong>。</p>
+</blockquote>
+<h3 id="923-service">9.2.3 Service 的四种类型<a class="headerlink" href="#923-service" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>作用域</th>
+<th>机制</th>
+<th>适用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ClusterIP</strong>（默认）</td>
+<td>集群内</td>
+<td>虚拟 IP，仅集群内可达</td>
+<td>内部服务间调用（默认首选）</td>
+</tr>
+<tr>
+<td><strong>NodePort</strong></td>
+<td>集群外</td>
+<td>每个节点开一个端口（30000-32767）→ 转发到 ClusterIP</td>
+<td>测试/小规模外部访问</td>
+</tr>
+<tr>
+<td><strong>LoadBalancer</strong></td>
+<td>集群外</td>
+<td>云厂商创建负载均衡器 → 指向 NodePort</td>
+<td>云环境生产对外</td>
+</tr>
+<tr>
+<td><strong>ExternalName</strong></td>
+<td>集群外</td>
+<td>DNS CNAME 指向外部域名（无 IP 无转发）</td>
+<td>把集群外服务"伪装"成集群内服务</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>NodePort 的访问链：
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>外部用户 → 任意节点 IP:31230 → kube-proxy 规则 → ClusterIP:80 → Pod
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>LoadBalancer 的访问链：
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>外部用户 → 云负载均衡器 → 节点 IP:NodePort → ClusterIP → Pod
+</code></pre></div>
+<blockquote>
+<p><strong>NodePort 端口范围</strong>：30000-32767（固定）——实验 07 Lab 3 看 <code>443:30573/TCP</code> 就是它。</p>
+</blockquote>
+<h3 id="924-headless-service-ip">9.2.4 headless Service：不要虚拟 IP<a class="headerlink" href="#924-headless-service-ip" title="Permanent link">&para;</a></h3>
+<p><code>clusterIP: None</code> 的 Service 不创建虚拟 IP——<strong>DNS 直接返回所有后端 Pod IP 列表</strong>，调用方自己选（轮询/随机）。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>普通 Service：DNS 解析 web-svc → 1 个 ClusterIP（kube-proxy 转发）
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>headless：   DNS 解析 web-svc → N 个 Pod IP（调用方自行选择）
+</code></pre></div>
+<p><strong>典型用途</strong>（第 5 章 StatefulSet 的配套）：</p>
+<ul>
+<li>StatefulSet 的每个 Pod 需要<strong>稳定 DNS 名</strong>：<code>web-0.web-svc.namespace.svc</code>——这要求 Service 是 headless（Pod 名解析由 StatefulSet 控制器写入 DNS）</li>
+<li>需要"拿到所有后端 IP 自己控制负载"的场景（如数据库客户端自己挑从库）</li>
+</ul>
+<blockquote>
+<p><strong>关键点</strong>：headless 的"稳定 DNS 名"只有配合 StatefulSet 才有（普通 Deployment 的 Pod 没有 <code>pod名.svc</code> 解析）。</p>
+</blockquote>
+<h3 id="925">9.2.5 多端口与端口命名<a class="headerlink" href="#925" title="Permanent link">&para;</a></h3>
+<p>一个 Service 可以暴露多个端口（如 80 HTTP + 443 HTTPS），<strong>每个端口必须有名字</strong>：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">ports</span><span class="p">:</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w">      </span><span class="c1"># 转发到 Pod 的 8080</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">443</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8443</span>
+</code></pre></div>
+<blockquote>
+<p><code>targetPort</code> 可以是端口号或<strong>容器端口名</strong>（第 4 章 ports.name）——用名字的好处：改端口号不用改 Service。</p>
+</blockquote>
+<hr />
+<h2 id="93-dns">9.3 集群 DNS：名字解析<a class="headerlink" href="#93-dns" title="Permanent link">&para;</a></h2>
+<h3 id="931-coredns">9.3.1 coredns 的角色<a class="headerlink" href="#931-coredns" title="Permanent link">&para;</a></h3>
+<p>集群内每个 Pod 的 <code>/etc/resolv.conf</code> 指向 coredns（kube-system 里的 Deployment，第 2 章 Killercoda 见过）。<strong>应用用 Service 名访问，DNS 解析成 ClusterIP</strong>。</p>
+<h3 id="932">9.3.2 解析规则<a class="headerlink" href="#932" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>&lt;svc名&gt;                     → 当前命名空间的 Service（简写）
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>&lt;svc名&gt;.&lt;命名空间&gt;            → 指定命名空间
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>&lt;svc名&gt;.&lt;命名空间&gt;.svc        → 完整形式（FQDN，svc 是固定段）
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>&lt;svc名&gt;.&lt;命名空间&gt;.svc.cluster.local → 带集群域（默认 cluster.local）
+</code></pre></div>
+<p><strong>命名空间作用域</strong>（易错点）：Pod 里写 <code>mysql</code> 只解析<strong>当前命名空间</strong>的 mysql；跨命名空间必须写 <code>mysql</code>。</p>
+<h3 id="933">9.3.3 排障视角<a class="headerlink" href="#933" title="Permanent link">&para;</a></h3>
+<p><code>kubectl exec -it xxx -- nslookup &lt;svc&gt;.&lt;ns&gt;.svc</code> 返回 IP = DNS 正常；解析失败先查：Service 存在吗（名字/命名空间对了吗）→ coredns 正常吗（实验 10 Lab 4 完整流程）。</p>
+<hr />
+<h2 id="94-ingress">9.4 Ingress：七层入口<a class="headerlink" href="#94-ingress" title="Permanent link">&para;</a></h2>
+<h3 id="941-ingress">9.4.1 为什么需要 Ingress<a class="headerlink" href="#941-ingress" title="Permanent link">&para;</a></h3>
+<p>NodePort/LoadBalancer 是<strong>四层</strong>（IP+端口）——问题：</p>
+<ul>
+<li>每个服务都要开一个端口（端口资源有限、管理混乱）</li>
+<li>没有"按域名/路径路由"能力（两个域名共用 80 端口做不到）</li>
+</ul>
+<p><strong>Ingress 是七层（HTTP/HTTPS）入口</strong>：一个入口点，按 <strong>host（域名）和 path（路径）</strong> 路由到不同 Service。</p>
+<h3 id="942">9.4.2 原理：对象 + 控制器<a class="headerlink" href="#942" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Ingress 对象（声明路由规则：哪个域名/路径 → 哪个 Service）
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>   │ 控制器（ingress-nginx，实验 07 安装）Watch 它
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>   ▼
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>ingress-nginx 控制器生成 nginx 配置（server_name/location 规则）并加载
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>   │
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>   ▼
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>外部流量 → ingress-nginx（NodePort/LoadBalancer）→ 按规则路由
+</code></pre></div>
+<p><strong>关键认知</strong>：Ingress <strong>对象本身不做转发</strong>——它只是"规则声明"；真正转发的是 <strong>Ingress 控制器</strong>（通常 ingress-nginx，一个跑在集群里的反向代理）。<strong>没有控制器，Ingress 对象是死的</strong>。</p>
+<h3 id="943-host-path">9.4.3 路由规则：host 与 path<a class="headerlink" href="#943-host-path" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ingress</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web-ingress</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">  </span><span class="nt">ingressClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span><span class="w">        </span><span class="c1"># 指定用哪个控制器</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">  </span><span class="nt">rules</span><span class="p">:</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shop.example.com</span><span class="w">        </span><span class="c1"># 域名 A</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">    </span><span class="nt">http</span><span class="p">:</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">      </span><span class="nt">paths</span><span class="p">:</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">        </span><span class="nt">pathType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Prefix</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="w">        </span><span class="nt">backend</span><span class="p">:</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w">          </span><span class="nt">service</span><span class="p">:</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shop-svc</span><span class="w">        </span><span class="c1"># → shop 服务</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="w">            </span><span class="nt">port</span><span class="p">:</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="w">              </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">blog.example.com</span><span class="w">        </span><span class="c1"># 域名 B</span>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="w">    </span><span class="nt">http</span><span class="p">:</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="w">      </span><span class="nt">paths</span><span class="p">:</span>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/admin</span>
+<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="w">        </span><span class="nt">pathType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Prefix</span>
+<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a><span class="w">        </span><span class="nt">backend</span><span class="p">:</span>
+<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a><span class="w">          </span><span class="nt">service</span><span class="p">:</span>
+<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a><span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">blog-admin</span><span class="w">      </span><span class="c1"># → admin 服务（按路径再细分）</span>
+</code></pre></div>
+<ul>
+<li><code>host</code> 匹配域名（Host 头）；<code>host</code> 前缀匹配 / <code>host</code> 精确匹配</li>
+<li>无 host 的规则 = 兜底（匹配所有域名）</li>
+<li><strong>访问验证</strong>（无 DNS 时）：<code>curl -H "Host: shop.example.com" http://节点IP:NodePort</code></li>
+</ul>
+<h3 id="944-tls">9.4.4 TLS 终止<a class="headerlink" href="#944-tls" title="Permanent link">&para;</a></h3>
+<p>HTTPS 的证书加解密（TLS 终止）由 Ingress 完成（后端 Pod 保持 HTTP 简单）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">tls</span><span class="p">:</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">hosts</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">shop.example.com</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="nt">secretName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shop-tls</span><span class="w">          </span><span class="c1"># kubernetes.io/tls 类型的 Secret（第 8 章）</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span><span class="nt">rules</span><span class="p">:</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shop.example.com</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</code></pre></div>
+<blockquote>
+<p>证书原料就是第 8 章的 <code>kubernetes.io/tls</code> Secret（<code>kubernetes.io/tls</code> + <code>kubernetes.io/tls</code>）——<strong>第 8 章的知识在这里落地</strong>。生产上证书由 cert-manager 自动签发续期（进阶）。</p>
+</blockquote>
+<h3 id="945-ingress-service">9.4.5 Ingress 与 Service 的分工（易混点）<a class="headerlink" href="#945-ingress-service" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>Ingress（七层：域名/路径路由 + TLS）→ Service（四层：负载均衡）→ Pod
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>   路由决策                          稳定入口 + 转发           真正干活
+</code></pre></div>
+<blockquote>
+<p><strong>一句话</strong>：<strong>Service 负责"负载均衡"（四层），Ingress 负责"路由"（七层）</strong>——Ingress 的 backend 指向 Service，不是直接指向 Pod。</p>
+</blockquote>
+<h3 id="946-gateway-apiingress">9.4.6 展望：Gateway API（Ingress 的继任者）<a class="headerlink" href="#946-gateway-apiingress" title="Permanent link">&para;</a></h3>
+<p><strong>Ingress 的局限</strong>（生产暴露的问题）：</p>
+<ul>
+<li>能力被"注解"绑架（不同控制器各自发明注解，不可移植）</li>
+<li>只能管"南北向"（外部进集群），管不了"东西向"（服务间流量）</li>
+<li>路由/流量治理能力有限（权重分流要靠控制器扩展）</li>
+</ul>
+<p><strong>Gateway API</strong>（Kubernetes 官方力推的下一代流量管理 API）的核心模型：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>GatewayClass（控制器实现声明，类比 StorageClass）
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>   │
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>   ▼
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>Gateway（入口实例：监听端口/TLS）
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>   │
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>   ▼
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>HTTPRoute（路由规则：host/path/权重/Header）→ 绑定到 Service
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>   → 与 Ingress 最大的不同：路由规则是**独立对象**（可组合、可跨命名空间引用）
+</code></pre></div>
+<p><strong>与 Ingress 的关系</strong>：</p>
+<ul>
+<li>不是"替换即弃"——Ingress 仍被广泛支持；Gateway API 是<strong>演进方向</strong>（v1.36 已 GA）</li>
+<li>关键优势：<strong>标准化</strong>（不再依赖控制器注解）、支持南北向 + 东西向、权重分流/Header 路由内建（金丝雀/A-B 的天然载体，第 5 章发布策略）</li>
+</ul>
+<blockquote>
+<p>决策逻辑：<strong>现有集群继续用 Ingress（成熟稳定）；新架构/需要高级流量治理 → 评估 Gateway API</strong>。知道模型（GatewayClass/Gateway/HTTPRoute）即可，用法与 Ingress 思路一脉相承。</p>
+</blockquote>
+<hr />
+<h2 id="95-networkpolicy">9.5 NetworkPolicy：网络隔离<a class="headerlink" href="#95-networkpolicy" title="Permanent link">&para;</a></h2>
+<h3 id="951">9.5.1 默认全通（现状与风险）<a class="headerlink" href="#951" title="Permanent link">&para;</a></h3>
+<p><strong>默认情况下集群内所有 Pod 互通</strong>（Pod 网络扁平）——攻击面：一个 Pod 被攻破，可以横向访问任何其他 Pod（包括数据库）。</p>
+<p><strong>NetworkPolicy</strong> 实现<strong>网络层白名单</strong>：声明"谁可以访问哪些 Pod"。</p>
+<h3 id="952">9.5.2 原理<a class="headerlink" href="#952" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NetworkPolicy</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db-allow-app</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">  </span><span class="nt">podSelector</span><span class="p">:</span><span class="w">                    </span><span class="c1"># 策略作用对象：哪些 Pod</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mysql</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">  </span><span class="nt">policyTypes</span><span class="p">:</span><span class="w">                    </span><span class="c1"># 生效方向</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ingress</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Egress</span>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w">  </span><span class="nt">ingress</span><span class="p">:</span><span class="w">                        </span><span class="c1"># 入站规则：谁可以访问 mysql</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">from</span><span class="p">:</span>
+<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">podSelector</span><span class="p">:</span><span class="w">                </span><span class="c1"># 允许：带 app=web 标签的 Pod</span>
+<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="w">        </span><span class="nt">matchLabels</span><span class="p">:</span>
+<a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="w">          </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web</span>
+<a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ipBlock</span><span class="p">:</span><span class="w">                    </span><span class="c1"># 允许：特定网段（外部/监控）</span>
+<a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="w">        </span><span class="nt">cidr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.0/8</span>
+<a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="w">  </span><span class="nt">egress</span><span class="p">:</span><span class="w">                         </span><span class="c1"># 出站规则：mysql 可以访问谁</span>
+<a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">to</span><span class="p">:</span>
+<a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">podSelector</span><span class="p">:</span>
+<a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="w">        </span><span class="nt">matchLabels</span><span class="p">:</span>
+<a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a><span class="w">          </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web</span>
+<a id="__codelineno-11-25" name="__codelineno-11-25" href="#__codelineno-11-25"></a><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<a id="__codelineno-11-26" name="__codelineno-11-26" href="#__codelineno-11-26"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<a id="__codelineno-11-27" name="__codelineno-11-27" href="#__codelineno-11-27"></a><span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3306</span>
+</code></pre></div>
+<p><strong>关键语义</strong>：</p>
+<ul>
+<li>匹配的 Pod <strong>一旦被某个 NetworkPolicy 覆盖，默认全通就失效</strong>——只允许规则里写明的来源（<strong>白名单制</strong>）</li>
+<li><code>policyTypes</code> 不写的方向不受影响（如只限制 Ingress，Egress 仍全通）</li>
+<li><strong>注意</strong>：应用要访问集群 DNS（coredns）→ egress 规则要<strong>放行 DNS（53/UDP）</strong>，否则 Pod 域名解析都断了（实验 07 Lab 6 实测踩坑）</li>
+</ul>
+<h3 id="953">9.5.3 典型策略设计<a class="headerlink" href="#953" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>默认：全通（无策略）
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>生产基线：
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>① 数据库层：只允许业务 Pod 访问（podSelector: app=web）+ 监控网段（ipBlock）
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>② 业务层：只允许 Ingress 入口访问 + 放行 DNS
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>③ 拒绝一切兜底：空规则 NetworkPolicy（podSelector: {} + 空 ingress）
+</code></pre></div>
+<blockquote>
+<p><strong>决策逻辑</strong>：先想"谁必须能访问我"（白名单）→ 逐条写 from/to；<strong>宁缺毋滥但要有</strong>——生产至少给数据库加隔离。</p>
+</blockquote>
+<h3 id="954-cni">9.5.4 依赖 CNI（重要）<a class="headerlink" href="#954-cni" title="Permanent link">&para;</a></h3>
+<p><strong>NetworkPolicy 必须由支持它的 CNI 实现</strong>：</p>
+<ul>
+<li><strong>Calico</strong>（本课程）：原生支持 ✓</li>
+<li>Flannel：<strong>不支持</strong>（这就是第 3 章选 Calico 的原因之一）</li>
+<li>Cilium：支持（更强）</li>
+</ul>
+<blockquote>
+<p>验证：<code>kubectl apply</code> 策略后，<code>kubectl apply</code> 能列出，且实际访问被拒——实验 07 Lab 6 用 nginx 实测。</p>
+</blockquote>
+<hr />
+<h2 id="96">9.6 综合走查：外部用户访问应用的完整路径<a class="headerlink" href="#96" title="Permanent link">&para;</a></h2>
+<p>把本章所有机制串起来（对应实验 11 的 WordPress 案例）：</p>
+<!-- 原 ASCII 图已转为 Mermaid -->
+<pre class="mermaid"><code>flowchart TD
+    user[/"用户浏览器"/] --&gt; dns["DNS 解析\nwp.example.com → 节点 IP"]
+    dns --&gt; ing["ingress-nginx\n（NodePort 31230）"]
+    ing --&gt;|"① Host 头匹配规则"| tls["② TLS 终止"]
+    tls --&gt; svc["wordpress Service\n（ClusterIP，四层负载均衡）"]
+    svc --&gt;|"③ kube-proxy DNAT"| pod["wordpress Pod"]
+    pod --&gt;|"④ 应用处理请求"| db[("MySQL\n（Service 名解析）")]
+    pod --&gt; resp["用户收到响应"]
+
+    style user fill:#FFF3E0,stroke:#E08A3C
+    style ing fill:#E8F4FD,stroke:#4A90D9
+    style svc fill:#E8F4FD,stroke:#4A90D9
+    style pod fill:#E8F8E8,stroke:#5BA85B
+    style db fill:#FFF3E0,stroke:#E08A3C</code></pre>
+<blockquote>
+<p>读图要点：<strong>五跳链路</strong>（DNS → Ingress → Service → Pod → MySQL），每层职责不同——Ingress 管域名路由与 TLS、Service 管负载均衡、kube-proxy 管转发、应用管业务；<strong>排障从外层往内层逐层验证</strong>（实验 10 Lab 4 的 Service/DNS 排查就是这个顺序）。</p>
+</blockquote>
+<p><strong>每层职责回顾</strong>：DNS（名字 → IP）→ Ingress（域名/路径路由 + TLS）→ Service（负载均衡）→ kube-proxy（转发规则）→ Pod（干活）。</p>
+<hr />
+<h2 id="97">9.7 实验演练指引<a class="headerlink" href="#97" title="Permanent link">&para;</a></h2>
+<p>本章机制对应实验 <strong>07「网络和服务」</strong>（6 Lab + 补充）：</p>
+<ul>
+<li><strong>Lab 1 katacoda deployment</strong>：准备多副本测试应用</li>
+<li><strong>Lab 2 ClusterIP Service</strong>：虚拟 IP + 负载均衡观察（多次访问返回不同 Pod）</li>
+<li><strong>Lab 3 NodePort Service</strong>：外部访问（节点 IP:端口）</li>
+<li><strong>Lab 4 headless Service + DNS</strong>：<code>clusterIP: None</code>，nslookup 返回所有 Pod IP</li>
+<li><strong>Lab 5 Ingress</strong>：安装 ingress-nginx + host 路由 + <strong>TLS</strong>（补充）</li>
+<li><strong>Lab 6 NetworkPolicy</strong>：白名单隔离 + <strong>DNS 放行</strong>（实测踩坑点）</li>
+<li><strong>补充</strong>：多端口 Service、ExternalName</li>
+</ul>
+<blockquote>
+<p>教学建议：Lab 2-4 是 Service 三连（内部→外部→无头）；Lab 5 对应 §9.4（路由与 TLS）；Lab 6 对应 §9.5（隔离，注意 DNS 放行）。</p>
+</blockquote>
+<hr />
+<h2 id="_2">本章小结<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>四层网络</strong>：节点（物理）/Pod（每 Pod 一 IP，CNI）/Service（虚拟 IP）/外部（NodePort/LB/Ingress）</li>
+<li><strong>Service 机制</strong>：Endpoints（选后端）+ kube-proxy（规则写内核，iptables 随机/IPVS 轮询）——<strong>流量不经过 kube-proxy 进程</strong></li>
+<li><strong>四种类型</strong>：ClusterIP（内部）/NodePort（节点端口）/LoadBalancer（云 LB）/ExternalName（外部伪装）；headless 返回 Pod IP 列表（StatefulSet 稳定 DNS 名）</li>
+<li><strong>DNS</strong>：coredns 解析 <code>svc.ns.svc</code>；<strong>命名空间作用域</strong>是易错点</li>
+<li><strong>Ingress</strong>：对象声明规则 + 控制器真正转发；host/path 路由 + TLS 终止（原料是 tls Secret）——<strong>Ingress 管路由（七层）、Service 管负载均衡（四层）</strong></li>
+<li><strong>NetworkPolicy</strong>：默认全通 → 白名单制；podSelector/ipBlock + ingress/egress；<strong>依赖支持它的 CNI（Calico 行、Flannel 不行）</strong>；注意放行 DNS</li>
+<li><strong>走查</strong>：DNS → Ingress → Service → kube-proxy → Pod，排障从外到内</li>
+</ul>
+<p><strong>衔接</strong>：第 10 章讲存储（PV/PVC/StorageClass）——"应用数据放哪"；第 11 章 RBAC 会给网络策略之外的"谁能做什么"提供另一层安全。</p>
+<h2 id="_3">思考题<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<ol>
+<li>流量真的经过 kube-proxy 进程吗？iptables 和 IPVS 模式的本质区别是什么？</li>
+<li>headless Service 的 DNS 返回什么？为什么 StatefulSet 需要 headless？</li>
+<li>跨命名空间访问 Service，DNS 名怎么写？只写 <code>mysql</code> 会发生什么？</li>
+<li>Ingress 对象不部署控制器会怎样？Ingress 的 backend 为什么指向 Service 而不是 Pod？</li>
+<li>给数据库配了只允许 app 访问的 NetworkPolicy，为什么数据库 Pod 突然"域名解析失败"了？</li>
+<li>外部用户访问 WordPress 的完整路径中，哪一层做域名路由、哪一层做负载均衡、哪一层做端口转发？</li>
+</ol>
+<blockquote>
+<p><strong>CKA 考点标注</strong>（对应域 3：服务与网络 <strong>20%，CKA 第二重</strong>）：
+- <strong>必考操作</strong>：<code>kubectl expose</code>、<code>kubectl expose</code>（host/path + TLS）、<code>kubectl expose</code>、<code>kubectl expose</code>
+- <strong>必考机制</strong>：Service 类型与转发（kube-proxy/Endpoints）、headless + StatefulSet、Ingress 规则与控制器、NetworkPolicy（podSelector/ipBlock、ingress/egress）
+- <strong>高频场景题</strong>：暴露服务（NodePort vs Ingress）、网络隔离（给 DB 加策略）、Service 排障（Endpoints 为空 → selector 错）
+- 排障关联（域 5）：Endpoints 为空、DNS 解析失败、Ingress 404/502、NetworkPolicy 误拦</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 · CC BY-NC-ND 4.0 · Kubernetes 容器云原生实战课程
+    </div>
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "navigation.expand", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@11/dist/mermaid.min.js"></script>
+      
+    
+  </body>
+</html>

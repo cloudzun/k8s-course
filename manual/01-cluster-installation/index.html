@@ -1,0 +1,4487 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="教材（19 章）+ 实验手册（14 实验 93 Lab）+ 课件，基于 K8s v1.36 真实集群实测，对接 CKA 认证">
+      
+      
+      
+        <link rel="canonical" href="https://www.cloudzun.com/k8s-course/manual/01-cluster-installation/">
+      
+      
+        <link rel="prev" href="../../textbook/%E6%80%9D%E8%80%83%E9%A2%98%E5%8F%82%E8%80%83%E7%AD%94%E6%A1%88/">
+      
+      
+        <link rel="next" href="../02-pod/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>实验 01 集群安装 - Kubernetes 容器云原生实战课程</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#k8s" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="Kubernetes 容器云原生实战课程" class="md-header__button md-logo" aria-label="Kubernetes 容器云原生实战课程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Kubernetes 容器云原生实战课程
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              实验 01 集群安装
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="切换深色模式"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换深色模式" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="切换浅色模式"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换浅色模式" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/cloudzun/k8s-course" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cloudzun/k8s-course
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Kubernetes 容器云原生实战课程" class="md-nav__button md-logo" aria-label="Kubernetes 容器云原生实战课程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Kubernetes 容器云原生实战课程
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/cloudzun/k8s-course" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cloudzun/k8s-course
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%AF%BE%E7%A8%8B%E5%A4%A7%E7%BA%B2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课程大纲
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    教材
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    教材
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch01-containers-and-cloud-native/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 1 章 容器与云原生基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch02-kubernetes-overview-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 2 章 Kubernetes 概述与架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch03-cluster-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 3 章 集群安装与配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch04-pod-and-containers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 4 章 Pod 与容器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch05-workload-controllers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 5 章 工作负载控制器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch06-scheduling-and-pod-placement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 6 章 调度与 Pod 放置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch07-autoscaling-and-resource-governance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 7 章 自动扩缩与资源治理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch08-configuration-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 8 章 配置管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch09-services-load-balancing-networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 9 章 服务、负载均衡与网络
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch10-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 10 章 存储
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch11-authentication-and-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 11 章 认证与授权
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch12-admission-and-container-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 12 章 准入与容器安全
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch13-cluster-security-hardening/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 13 章 集群安全加固
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch14-cluster-maintenance-and-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 14 章 集群维护与运维
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch15-observability-monitoring-logging-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 15 章 可观测性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch16-troubleshooting-and-reliability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 16 章 故障排查与可靠性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch17-helm-and-kustomize/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 17 章 Helm 与 Kustomize
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch18-comprehensive-practical-wordpress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 18 章 综合实战
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/ch19-cka-exam-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 19 章 CKA 考试指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/COURSE-OUTLINE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    教材↔实验映射
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    术语表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../textbook/%E6%80%9D%E8%80%83%E9%A2%98%E5%8F%82%E8%80%83%E7%AD%94%E6%A1%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    思考题参考答案
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验手册
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    实验手册
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 01 集群安装
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 01 集群安装
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        本章目标
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实验环境与时间预估
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        手动安装（3 节点·国内网络版）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="手动安装（3 节点·国内网络版）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        文章概述
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        前置检查
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="前置检查">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-ssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. SSH 连通性 + 系统信息
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 测网络连通性和真实带宽（关键！）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-k8s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 镜像加速站预测试 + K8s 版本探测（关键！）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 资源规划
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubeadm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        部署步骤（kubeadm）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="部署步骤（kubeadm）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 系统准备（3 台节点）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-containerd3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 装 containerd（3 台节点）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-dockerio-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 配置 docker.io 镜像加速（3 台节点）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-kubelet-kubeadm-kubectl3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 装 kubelet / kubeadm / kubectl（3 台节点）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-kubeadm-init-master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. kubeadm init（仅 master）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-kubeconfig-master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 配置 kubeconfig（仅 master）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-worker-node2-node3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. worker 节点加入集群（node2 / node3）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-cnicalico-master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. 装 CNI（Calico）（仅 master）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-storageclass-08-lab-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. 装默认 StorageClass —— 本手册【延迟到 实验 08 Lab 4】安装
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. 验证（master）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        常见故障排查清单
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ghcrio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        应急方案：海外源（ghcr.io 等）镜像曲线导入法
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adockerio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录A：docker.io 镜像加速站实测清单
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="附录A：docker.io 镜像加速站实测清单">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        测试方法（可复用于验证新的加速站候选）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2026-07-22-dongyubindockerhub" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实测结果（2026-07-22，华为云虚机，来源清单参考 dongyubin/DockerHub）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录B：镜像加速配置的原理笔记
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="附录B：镜像加速配置的原理笔记">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use_local_image_pull" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么要改 use_local_image_pull
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pkgsk8sio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关于 pkgs.k8s.io 连通性的实测背景
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录C：实测部署的组件版本汇总
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dworker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录D：worker 节点一键就绪脚本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录E：单节点快速安装（可选）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用在线沙盒
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubectl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kubectl 基础与公共操作
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Kubectl 基础与公共操作">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-kubectl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. kubectl 命令体系
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 命名空间
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-yaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. yaml 基本语法与工作流
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 标签与选择器
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Pod 基本操作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 清理
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        本章验收清单
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f2026-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录F：2026-08 三节点实测记录（从空白机器到可用集群）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="附录F：2026-08 三节点实测记录（从空白机器到可用集群）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#f1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.1 环境与最终版本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.2 实测时间线与踩坑记录
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f3-02-09-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.3 冒烟测试结果（实验 02-09核心 Lab）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.4 结论
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-pod/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 02 Pod
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-workload-scheduling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 03 工作负载调度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-resource-scheduling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 04 资源调度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-performance-and-monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 05 性能与监控
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-configmap-and-secret/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 06 配置管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-network-and-service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 07 网络与服务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 08 存储
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-authentication-and-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 09 认证与授权
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 10 故障排查
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11-wordpress-app/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 11 WordPress 综合演练
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12-cluster-maintenance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 12 集群维护
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13-helm-delivery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 13 Helm 交付
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14-observability-optional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 14 可观测性（可选）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../00-%E5%AE%9E%E9%AA%8C%E9%95%9C%E5%83%8F%E6%B8%85%E5%8D%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验镜像清单
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课件（网页版）
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    课件（网页版）
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 1 章 容器与云原生基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 2 章 Kubernetes 概述与架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 3 章 集群安装与配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 4 章 Pod 与容器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 5 章 工作负载控制器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 6 章 调度与 Pod 放置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 7 章 自动扩缩与资源治理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 8 章 配置管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 9 章 服务、负载均衡与网络
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 10 章 存储
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 11 章 认证与授权
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 12 章 准入与容器安全
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 13 章 集群安全加固
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 14 章 集群维护与运维
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch15/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 15 章 可观测性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch16/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 16 章 故障排查与可靠性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch17/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 17 章 Helm 与 Kustomize
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch18/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 18 章 综合实战
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch19/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 19 章 CKA 考试指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        本章目标
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实验环境与时间预估
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        手动安装（3 节点·国内网络版）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="手动安装（3 节点·国内网络版）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        文章概述
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        前置检查
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="前置检查">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-ssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. SSH 连通性 + 系统信息
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 测网络连通性和真实带宽（关键！）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-k8s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 镜像加速站预测试 + K8s 版本探测（关键！）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 资源规划
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubeadm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        部署步骤（kubeadm）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="部署步骤（kubeadm）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 系统准备（3 台节点）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-containerd3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 装 containerd（3 台节点）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-dockerio-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 配置 docker.io 镜像加速（3 台节点）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-kubelet-kubeadm-kubectl3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 装 kubelet / kubeadm / kubectl（3 台节点）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-kubeadm-init-master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. kubeadm init（仅 master）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-kubeconfig-master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 配置 kubeconfig（仅 master）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-worker-node2-node3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. worker 节点加入集群（node2 / node3）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-cnicalico-master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. 装 CNI（Calico）（仅 master）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-storageclass-08-lab-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. 装默认 StorageClass —— 本手册【延迟到 实验 08 Lab 4】安装
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. 验证（master）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        常见故障排查清单
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ghcrio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        应急方案：海外源（ghcr.io 等）镜像曲线导入法
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adockerio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录A：docker.io 镜像加速站实测清单
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="附录A：docker.io 镜像加速站实测清单">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        测试方法（可复用于验证新的加速站候选）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2026-07-22-dongyubindockerhub" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实测结果（2026-07-22，华为云虚机，来源清单参考 dongyubin/DockerHub）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录B：镜像加速配置的原理笔记
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="附录B：镜像加速配置的原理笔记">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use_local_image_pull" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么要改 use_local_image_pull
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pkgsk8sio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关于 pkgs.k8s.io 连通性的实测背景
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录C：实测部署的组件版本汇总
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dworker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录D：worker 节点一键就绪脚本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录E：单节点快速安装（可选）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用在线沙盒
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubectl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kubectl 基础与公共操作
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Kubectl 基础与公共操作">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-kubectl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. kubectl 命令体系
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 命名空间
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-yaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. yaml 基本语法与工作流
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 标签与选择器
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Pod 基本操作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 清理
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        本章验收清单
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f2026-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        附录F：2026-08 三节点实测记录（从空白机器到可用集群）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="附录F：2026-08 三节点实测记录（从空白机器到可用集群）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#f1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.1 环境与最终版本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.2 实测时间线与踩坑记录
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f3-02-09-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.3 冒烟测试结果（实验 02-09核心 Lab）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F.4 结论
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="k8s">K8S 群集的安装<a class="headerlink" href="#k8s" title="Permanent link">&para;</a></h1>
+<h2 id="_1">本章目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>学完本章后，你将能够：</p>
+<ul>
+<li>独立部署一个 <strong>3 节点 Kubernetes 集群</strong>（1 个 master + 2 个 worker）</li>
+<li>理解 kubeadm 安装流程每一步在做什么（kubelet / kubeadm / kubectl 三件套、CRI、CNI；StorageClass 按教学顺序延迟到 实验 08 Lab 4 安装）</li>
+<li>掌握国内网络环境下的<strong>连通性检查</strong>与<strong>镜像加速配置</strong>方法</li>
+<li>用 kubectl 完成集群状态查看、命名空间与 Pod 的基本操作，熟悉交互方式</li>
+</ul>
+<h2 id="_2">实验环境与时间预估<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>节点数量</td>
+<td>3 台（node1 = master，node2 / node3 = worker）</td>
+</tr>
+<tr>
+<td>节点 IP 约定</td>
+<td>本手册后续章节统一按 <strong>node1=192.168.0.11、node2=192.168.0.12、node3=192.168.0.13</strong> 编写（实际部署请替换为你自己的 IP，输出示例基于此约定）</td>
+</tr>
+<tr>
+<td>操作系统</td>
+<td>Ubuntu 24.04（或其他主流发行版，部分命令略有差异）</td>
+</tr>
+<tr>
+<td>硬件规格</td>
+<td>每台 2 核 4GB 起步（建议 4 核 8GB，后续 HPA 实验需要余量）</td>
+</tr>
+<tr>
+<td>网络</td>
+<td>云主机或虚拟机均可；国内网络环境需先按"前置检查"实测连通性</td>
+</tr>
+<tr>
+<td>预计时长</td>
+<td><strong>90~120 分钟</strong>（含前置检查与最终验证；网络状况差时会更久）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ 如果只有一台机器，可先按文末「附录E：单节点快速安装」体验，但<strong>后续章节（02-09）的实验默认是 3 节点环境</strong>（调度、跨节点网络、NFS 存储等），强烈建议按正文完成 3 节点部署。</p>
+</blockquote>
+<h2 id="3">手动安装（3 节点·国内网络版）<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>基于 2026-07-22 在华为云虚机（Ubuntu 24.04，2核 4GB）上的实际部署经验整理。</p>
+</blockquote>
+<hr />
+<h3 id="_3">文章概述<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>国内网络环境下用 kubeadm 从零部署标准 Kubernetes 集群，最大的坑不在 K8s 本身，而在于 <code>registry.k8s.io</code>、<code>docker.io</code>、<code>ghcr.io</code>、<code>pkgs.k8s.io</code> 这些海外基础设施在国内的连通性参差不齐——同一份检查脚本在不同机房跑出来的结果可能截然相反，没法照搬一份"绝对能行"的方案。</p>
+<p>本文档把一次完整实战踩坑整理成可复用的操作指南：<strong>正文是从系统准备到集群验证通过的 10 个步骤</strong>（步骤 1-4 在三台节点上都要执行，步骤 5-10 在 master 上执行，步骤 7 在 worker 上执行 join），每一步先测连通性、按需切换国内加速源，重点解决了 containerd 2.x 版本镜像加速配置容易"配了却不生效"的坑；<strong>附录部分</strong>收录了实测过的国内镜像加速站清单、部分配置背后的原理说明、本次验证通过的组件版本组合，以及单节点快速安装的可选路径。</p>
+<p>适合场景：拿到 3 台国内云主机（华为云/阿里云等），要从零装一个能正常工作的标准版 K8s 集群，且不确定这台机器对海外网络的连通性如何。</p>
+<hr />
+<h3 id="_4">前置检查<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>务必先做，能节省后面排查的大量时间。<strong>三台节点都要执行。</strong></p>
+<h4 id="1-ssh">1. SSH 连通性 + 系统信息<a class="headerlink" href="#1-ssh" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uname<span class="w"> </span>-a<span class="p">;</span><span class="w"> </span>cat<span class="w"> </span>/etc/os-release<span class="p">;</span><span class="w"> </span>free<span class="w"> </span>-h<span class="p">;</span><span class="w"> </span>df<span class="w"> </span>-h<span class="w"> </span>/<span class="p">;</span><span class="w"> </span>nproc<span class="p">;</span><span class="w"> </span>ip<span class="w"> </span>a<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>inet
+</code></pre></div>
+<p>记录：CPU核数、内存、内网/公网 IP、系统版本（Ubuntu/CentOS 等）。<strong>master 的 内网 IP 后面 init 要用，worker 的 IP 用于 join 后确认。</strong></p>
+<h4 id="2">2. 测网络连通性和真实带宽（关键！）<a class="headerlink" href="#2" title="Permanent link">&para;</a></h4>
+<p>不要只看 connect 是否通，要实测速度：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># 测真实下载速度（用CDN测速点，不受地域限制）</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>curl<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-s<span class="w"> </span>-w<span class="w"> </span><span class="s2">"speed=%{speed_download} bytes/s\n"</span><span class="w"> </span>--max-time<span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>https://speed.cloudflare.com/__down?bytes<span class="o">=</span><span class="m">25000000</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1"># 分别测关键域名连通性（docker registry类端点用/v2/探测，200/302/401都算"通"，401是缺认证信息导致的正常响应）</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="k">for</span><span class="w"> </span>u<span class="w"> </span><span class="k">in</span><span class="w"> </span>https://registry.k8s.io<span class="w"> </span>https://pkgs.k8s.io<span class="w"> </span>https://ghcr.io<span class="w"> </span>https://docker.1panel.live<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">"</span><span class="nv">$u</span><span class="s2"> =&gt; %{http_code} time=%{time_total}\n"</span><span class="w"> </span>--max-time<span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="nv">$u</span>/v2/<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"</span><span class="nv">$u</span><span class="s2"> FAILED"</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="k">done</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># dl.k8s.io 是后面获取"最新稳定版"K8s版本号要用到的域名，单独测（不是registry API，不能用/v2/）</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">"dl.k8s.io =&gt; %{http_code} time=%{time_total}\n"</span><span class="w"> </span>--max-time<span class="w"> </span><span class="m">8</span><span class="w"> </span>https://dl.k8s.io/release/stable.txt
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c1"># 阿里云的两个备选源不是docker registry API，不能用/v2/探测，要用各自实际路径测试</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">"aliyun-registry =&gt; %{http_code}\n"</span><span class="w"> </span>--max-time<span class="w"> </span><span class="m">8</span><span class="w"> </span>https://registry.aliyuncs.com/v2/
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">"aliyun-apt-source =&gt; %{http_code}\n"</span><span class="w"> </span>--max-time<span class="w"> </span><span class="m">8</span><span class="w"> </span>https://mirrors.aliyun.com/kubernetes-new/core/stable/v1.34/deb/Release
+</code></pre></div>
+<p><strong>重要教训</strong>：整体带宽可能是好的（比如 7-8MB/s），但特定海外域名单独慢/不稳定，不能一概而论。<code>docker.io</code> 通常国内直连超时，但 <code>registry.k8s.io</code> 是否可达<strong>因机房而异，实测结果差异很大</strong>（同一份检查脚本在不同虚机上跑出过"直连超时"和"200直通"两种截然不同的结果），所以每次部署都要重新测，不能凭上次经验判断这次能不能通。</p>
+<h4 id="3-k8s">3. 镜像加速站预测试 + K8s 版本探测（关键！）<a class="headerlink" href="#3-k8s" title="Permanent link">&para;</a></h4>
+<blockquote>
+<p><strong>务必在最开始就做</strong>——不要等装完 containerd 才发现加速站不可用，也不要等 init 拉镜像才发现源不通。这一步同时确定两件事：<strong>用哪个加速站</strong>、<strong>装哪个 K8s 版本</strong>（默认安装当前最新稳定版）。</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># ① 探测当前 K8s 最新稳定版（本手册默认安装"当前最新版"，别照抄历史版本号）</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>curl<span class="w"> </span>-sL<span class="w"> </span>https://dl.k8s.io/release/stable.txt
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1">#    → 输出如 v1.36.3，记下这个版本号，步骤 4 安装时用它（或直接动态获取）</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># ② 候选 docker.io 加速站逐个预测试（附录A 实测过 + 本次实测补充，多站备选）</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1">#    返回 200/401/403 都算"可连接"（403 表示可达但可能对部分镜像受限）</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">for</span><span class="w"> </span>host<span class="w"> </span><span class="k">in</span><span class="w"> </span>docker.1panel.live<span class="w"> </span>docker.m.daocloud.io<span class="w"> </span>docker.jiaxin.site<span class="w"> </span>proxy.vvvv.ee<span class="w"> </span>free.hubfast.cn<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span><span class="nv">code</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">"%{http_code}"</span><span class="w"> </span>--max-time<span class="w"> </span><span class="m">8</span><span class="w"> </span>https://<span class="nv">$host</span>/v2/<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="k">)</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"</span><span class="nv">$host</span><span class="s2"> =&gt; </span><span class="si">${</span><span class="nv">code</span><span class="k">:-</span><span class="nv">FAILED</span><span class="si">}</span><span class="s2">"</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="k">done</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c1"># ③ 测试 kubeadm 控制面镜像仓库（registry.k8s.io 不可达时用阿里云替代）</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">"registry.k8s.io =&gt; %{http_code}\n"</span><span class="w"> </span>--max-time<span class="w"> </span><span class="m">8</span><span class="w"> </span>https://registry.k8s.io/v2/
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">"aliyun-google_containers =&gt; %{http_code}\n"</span><span class="w"> </span>--max-time<span class="w"> </span><span class="m">8</span><span class="w"> </span>https://registry.aliyuncs.com/v2/
+</code></pre></div>
+<p><strong>根据输出确定三个关键选择</strong>（后面步骤会用到，建议记在纸上/文件里）：</p>
+<table>
+<thead>
+<tr>
+<th>选择</th>
+<th>判定</th>
+<th>后续使用位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主加速站 <code>ACCEL_HOST</code></td>
+<td>②中返回 200 且速度快的（如 <code>docker.1panel.live</code>）</td>
+<td>步骤 3 配置 hosts.toml</td>
+</tr>
+<tr>
+<td>备用加速站（1-2 个）</td>
+<td>②中其他可连接的（如 <code>docker.m.daocloud.io</code>）</td>
+<td>步骤 8 calico 预拉失败时换源</td>
+</tr>
+<tr>
+<td>镜像仓库 <code>IMAGE_REPO</code></td>
+<td>③中 <code>registry.k8s.io</code> 返回 200 → 用官方源；不通 → <code>registry.aliyuncs.com/google_containers</code></td>
+<td>步骤 5 kubeadm init</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>实测教训</strong>：① 加速站对<strong>不同镜像可用性不同</strong>——同一批站里 <code>docker.1panel.live</code> 对 <code>calico/node</code> 正常、但对 <code>calico/cni</code> 返回 <strong>403</strong>（换 <code>docker.m.daocloud.io</code> 成功）；② 加速站可用性随时间变化，<strong>每次部署都要重新测</strong>，别沿用上次结果。</p>
+</blockquote>
+<h4 id="4">4. 资源规划<a class="headerlink" href="#4" title="Permanent link">&para;</a></h4>
+<p>2核机器只够跑单节点 K8s 基础组件 + 少量应用 Pod。如果计划部署较多 Deployment/Pod（尤其自动扩容 HPA），提前评估好 CPU/内存总量，避免后续出现 <code>Insufficient cpu</code> 导致 Pod 一直 Pending。</p>
+<hr />
+<h3 id="kubeadm">部署步骤（kubeadm）<a class="headerlink" href="#kubeadm" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>节点分工</strong>：步骤 1-4 在 <strong>3 台节点上都要执行</strong>；步骤 5-6、8-10 仅在 <strong>master（node1）</strong> 执行；步骤 7 在 <strong>worker（node2/node3）</strong> 执行。以下命令均假设你已是 root（或已 <code>sudo -i</code> 切换到root）。如果习惯给每条命令单独加 <code>sudo</code>，注意管道+<code>tee</code> 写文件的场景要把 <code>sudo</code> 加在 <code>tee</code> 前面而不是 <code>cat</code> 前面，例如 <code>cat &lt;&lt;EOF | sudo tee file</code>。</p>
+</blockquote>
+<h4 id="1-3">1. 系统准备（3 台节点）<a class="headerlink" href="#1-3" title="Permanent link">&para;</a></h4>
+<p>关闭 swap、加载 br_netfilter/overlay 模块、配置 sysctl 转发参数</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>swapoff<span class="w"> </span>-a
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">'/ swap /s/^/#/'</span><span class="w"> </span>/etc/fstab
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>cat<span class="w"> </span><span class="s">&lt;&lt;EOF | tee /etc/modules-load.d/k8s.conf</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="s">overlay</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="s">br_netfilter</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="s">EOF</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>modprobe<span class="w"> </span>overlay
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>modprobe<span class="w"> </span>br_netfilter
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>cat<span class="w"> </span><span class="s">&lt;&lt;EOF | tee /etc/sysctl.d/k8s.conf</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="s">net.bridge.bridge-nf-call-iptables  = 1</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="s">net.bridge.bridge-nf-call-ip6tables = 1</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="s">net.ipv4.ip_forward                 = 1</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="s">EOF</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>sysctl<span class="w"> </span>--system
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>apt-get<span class="w"> </span>update<span class="w"> </span>-qq
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>-qq<span class="w"> </span>apt-transport-https<span class="w"> </span>ca-certificates<span class="w"> </span>curl<span class="w"> </span>gnupg
+</code></pre></div>
+<blockquote>
+<p>⚠️ <strong>如果失败看这里</strong>：<code>modprobe: FATAL: Module br_netfilter not found</code> → 内核模块缺失，先 <code>apt-get install -y linux-modules-extra-$(uname -r)</code> 再试；<code>sysctl --system</code> 报 <code>net.bridge</code> 相关错误 → 确认 br_netfilter 已加载（<code>lsmod | grep br_netfilter</code>）。</p>
+</blockquote>
+<h4 id="2-containerd3">2. 装 containerd（3 台节点）<a class="headerlink" href="#2-containerd3" title="Permanent link">&para;</a></h4>
+<p>生成默认配置，<strong>改 SystemdCgroup=true</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>-qq<span class="w"> </span>containerd
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/etc/containerd
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>containerd<span class="w"> </span>config<span class="w"> </span>default<span class="w"> </span>&gt;<span class="w"> </span>/etc/containerd/config.toml
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">'s/SystemdCgroup = false/SystemdCgroup = true/'</span><span class="w"> </span>/etc/containerd/config.toml
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>systemctl<span class="w"> </span>restart<span class="w"> </span>containerd
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>containerd
+</code></pre></div>
+<blockquote>
+<p>⚠️ <strong>如果失败看这里</strong>：<code>containerd config default</code> 提示文件不存在 → 先确认 containerd 已安装（<code>containerd --version</code>）；restart 后状态异常 → <code>systemctl status containerd</code> 查看报错。</p>
+</blockquote>
+<h4 id="3-dockerio-3">3. 配置 docker.io 镜像加速（3 台节点）<a class="headerlink" href="#3-dockerio-3" title="Permanent link">&para;</a></h4>
+<p>强烈建议在装完 containerd 后立刻做这一步，避免后面所有 docker.io 镜像拉取都超时。</p>
+<p>需要同时做两件事：</p>
+<p><strong>1) 打开 <code>use_local_image_pull</code> 开关</strong>（containerd 2.x 默认关闭，不打开的话下面的镜像加速配置不会生效）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>sed<span class="w"> </span>-i<span class="w"> </span><span class="s2">"s/use_local_image_pull = false/use_local_image_pull = true/"</span><span class="w"> </span>/etc/containerd/config.toml
+</code></pre></div>
+<p><strong>2) 配置镜像加速站</strong>（推荐地址见附录A，这里以 <code>docker.1panel.live</code> 为例）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/etc/containerd/certs.d/docker.io
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/etc/containerd/certs.d/docker.io/hosts.toml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="s">server = "https://docker.io"</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="s">[host."https://docker.1panel.live"]</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="s">  capabilities = ["pull", "resolve"]</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="s">EOF</span>
+</code></pre></div>
+<p>两步做完后重启 containerd 生效：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>systemctl<span class="w"> </span>restart<span class="w"> </span>containerd
+</code></pre></div>
+<p>验证：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>crictl<span class="w"> </span>pull<span class="w"> </span>docker.io/library/nginx:alpine
+</code></pre></div>
+<p>应在 10 秒内完成（而非超时）。</p>
+<blockquote>
+<p>⚠️ <strong>如果失败看这里</strong>：<code>crictl pull</code> 超时 → 先确认 <code>use_local_image_pull</code> 已是 true（<code>grep use_local_image_pull /etc/containerd/config.toml</code>），再确认 hosts.toml 里的加速站地址正确；还不行就换前置检查第3步选出的另一个加速站试试。原理见附录B。</p>
+<p><strong>特别注意（实测踩坑）</strong>：hosts.toml 是 <strong>TOML 格式，双引号不能丢</strong>——<code>server = "https://docker.io"</code> 和 <code>[host."https://加速站"]</code> 的引号必须保留，否则 containerd 解析失败、静默回退直连 docker.io（表现为"配置了加速但拉取还是超时"）。写完用 <code>cat /etc/containerd/certs.d/docker.io/hosts.toml</code> 核对引号是否完整。</p>
+<p><code>crictl</code> 需要单独安装（kubeadm 不带）；如果当前机器还没装 crictl（或 GitHub 下载慢），可跳过本条验证，<strong>改用集群装好后步骤 10 的 <code>kubectl run test --image=busybox</code> 来验证 docker.io 加速是否生效</strong>（kubelet 走同样的 CRI 拉取路径）。</p>
+<p><code>ghcr.io</code>、<code>registry.k8s.io</code> 等非 docker.io 的海外源，没有这类现成 CDN 加速，遇到需要拉取的场景见下方「应急方案」。</p>
+</blockquote>
+<h4 id="4-kubelet-kubeadm-kubectl3">4. 装 kubelet / kubeadm / kubectl（3 台节点）<a class="headerlink" href="#4-kubelet-kubeadm-kubectl3" title="Permanent link">&para;</a></h4>
+<p>官方 apt 源是 <code>pkgs.k8s.io/core:/stable:/v{MINOR}/deb/</code>，先测一下连通性，不通则改用国内镜像源：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">"%{http_code}\n"</span><span class="w"> </span>--max-time<span class="w"> </span><span class="m">8</span><span class="w"> </span>https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release
+</code></pre></div>
+<p>若返回非200/302（如超时或连接失败），改用阿里云的 kubernetes apt 镜像源
+（<code>https://mirrors.aliyun.com/kubernetes-new/core/stable/v{MINOR}/deb/</code>）替代下面命令里的 <code>pkgs.k8s.io</code>。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nv">LATEST</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-sL<span class="w"> </span>https://dl.k8s.io/release/stable.txt<span class="k">)</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nv">MINOR</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"</span><span class="nv">$LATEST</span><span class="s2">"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-E<span class="w"> </span><span class="s1">'s/^v([0-9]+\.[0-9]+)\..*/\1/'</span><span class="k">)</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/etc/apt/keyrings
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="c1"># 注意：gpg 必须加 --batch（无 TTY 的自动化环境/脚本执行必需，否则报 cannot open '/dev/tty'）</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://pkgs.k8s.io/core:/stable:/v<span class="si">${</span><span class="nv">MINOR</span><span class="si">}</span>/deb/Release.key<span class="w"> </span><span class="p">|</span><span class="w"> </span>gpg<span class="w"> </span>--batch<span class="w"> </span>--dearmor<span class="w"> </span>-o<span class="w"> </span>/etc/apt/keyrings/kubernetes-apt-keyring.gpg
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">"deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v</span><span class="si">${</span><span class="nv">MINOR</span><span class="si">}</span><span class="s2">/deb/ /"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>/etc/apt/sources.list.d/kubernetes.list
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>apt-get<span class="w"> </span>update<span class="w"> </span>-qq
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>-qq<span class="w"> </span>kubelet<span class="w"> </span>kubeadm<span class="w"> </span>kubectl
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>apt-mark<span class="w"> </span>hold<span class="w"> </span>kubelet<span class="w"> </span>kubeadm<span class="w"> </span>kubectl
+</code></pre></div>
+<blockquote>
+<p>⚠️ <strong>如果失败看这里</strong>：<code>Release.key</code> 下载失败 → <code>pkgs.k8s.io</code> 不通，按上面说明换阿里云源；<code>apt-get update</code> 报 GPG 错误 → 确认 keyring 路径与 <code>signed-by</code> 一致。<strong>三台节点务必装同一个版本</strong>（都用动态获取，间隔不长则版本一致；若不一致，worker 节点手动指定与 master 相同的版本号，见附录C）。</p>
+</blockquote>
+<h4 id="5-kubeadm-init-master">5. kubeadm init（仅 master）<a class="headerlink" href="#5-kubeadm-init-master" title="Permanent link">&para;</a></h4>
+<p><strong>先根据前置检查第3步里 <code>registry.k8s.io</code> 的连通性结果决定要不要用国内镜像仓库</strong>（<code>IMAGE_REPO</code> 变量）：如果那一步测试是通的（200），可以省掉 <code>--image-repository</code> 参数直接走官方源；如果超时/不通，用 <code>registry.aliyuncs.com/google_containers</code> 替代。本次实测以国内镜像仓库为例：</p>
+<p>先预热镜像，<strong>并注入 kubelet 的沙箱（pause）镜像</strong>（关键！减少 init 失败重试的时间浪费，同时避免下面这个最常见的坑）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nv">IMAGE_REPO</span><span class="o">=</span>registry.aliyuncs.com/google_containers
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="c1"># ① 预热全部控制面组件镜像（含 pause）</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>kubeadm<span class="w"> </span>config<span class="w"> </span>images<span class="w"> </span>pull<span class="w"> </span>--image-repository<span class="w"> </span><span class="si">${</span><span class="nv">IMAGE_REPO</span><span class="si">}</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="c1"># ② 注入 pause 沙箱镜像（关键预防步骤）</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1">#    坑：kubelet 创建 Pod 沙箱时默认从 registry.k8s.io 拉 pause 镜像，国内拉不到会导致</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="c1">#    init 卡在 wait-control-plane（静态 Pod 全部起不来，日志报 failed to get sandbox image）。</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="c1">#    注意 kubelet 内置的默认 pause 版本与 kubeadm 预热的版本可能不同（实测 kubeadm 拉 3.10.2、</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="c1">#    kubelet 要 3.10.1），所以把常见版本都 tag 一遍，确保全覆盖：</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="nv">PAUSE_VER</span><span class="o">=</span><span class="k">$(</span>kubeadm<span class="w"> </span>config<span class="w"> </span>images<span class="w"> </span>list<span class="w"> </span>--image-repository<span class="w"> </span><span class="si">${</span><span class="nv">IMAGE_REPO</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>pause<span class="w"> </span><span class="p">|</span><span class="w"> </span>rev<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d:<span class="w"> </span>-f1<span class="w"> </span><span class="p">|</span><span class="w"> </span>rev<span class="k">)</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>pull<span class="w"> </span><span class="si">${</span><span class="nv">IMAGE_REPO</span><span class="si">}</span>/pause:<span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="k">for</span><span class="w"> </span>v<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span><span class="w"> </span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d.<span class="w"> </span>-f1-2<span class="k">)</span><span class="w"> </span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d.<span class="w"> </span>-f1-2<span class="k">)</span>.1<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">  </span>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>tag<span class="w"> </span><span class="si">${</span><span class="nv">IMAGE_REPO</span><span class="si">}</span>/pause:<span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span><span class="w"> </span>registry.k8s.io/pause:<span class="si">${</span><span class="nv">v</span><span class="si">}</span>
+<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="k">done</span>
+<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="c1"># 验证：ctr -n k8s.io images list -q | grep "registry.k8s.io/pause"  应看到多个 tag</span>
+</code></pre></div>
+<p>关键参数（<code>INNER_IP</code> 用前置检查第1步 <code>ip a | grep inet</code> 里记录的<strong>内网</strong>IP，不是公网IP）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nv">INNER_IP</span><span class="o">=</span>&lt;替换成你记录的内网IP，如<span class="w"> </span><span class="m">192</span>.168.0.11&gt;
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>kubeadm<span class="w"> </span>init<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">  </span>--pod-network-cidr<span class="o">=</span><span class="m">10</span>.244.0.0/16<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">  </span>--apiserver-advertise-address<span class="o">=</span><span class="si">${</span><span class="nv">INNER_IP</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">  </span>--image-repository<span class="w"> </span><span class="si">${</span><span class="nv">IMAGE_REPO</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">  </span>--cri-socket<span class="o">=</span>unix:///var/run/containerd/containerd.sock
+</code></pre></div>
+<blockquote>
+<p>⚠️ <strong>不要用 <code>192.168.0.0/16</code> 作为 pod-network-cidr</strong>，会跟节点自身网段冲突（很多云主机内网就是 <code>192.168.x.x/24</code>）！</p>
+<p><code>--image-repository ${IMAGE_REPO}</code> 指定控制面镜像仓库，避免拉取超时。</p>
+<p>⚠️ <strong>如果失败看这里</strong>：
+- init 卡在 <code>error execution phase wait-control-plane</code> 且 <code>journalctl -u kubelet</code> 报 <strong><code>failed to get sandbox image "registry.k8s.io/pause:xxx"</code></strong> → 就是 pause 沙箱镜像没注入成功，回到上面 ② 重新注入（确认 <code>ctr -n k8s.io images list -q | grep pause</code> 有 <code>registry.k8s.io/pause:&lt;版本&gt;</code>），然后 <code>systemctl restart kubelet</code>；<strong>不要急着 reset 重来</strong>
+- init 卡在 wait-control-plane 且日志报 <code>PullImage</code> 超时（非 pause）→ 控制面镜像拉取失败，换 <code>IMAGE_REPO</code> 重试（先 <code>kubeadm reset -f</code> 清理）
+- 报 <code>[ERROR CRI]</code> → 确认 containerd 在运行且 SystemdCgroup 已改
+- <strong>init 失败后 <code>kubectl get nodes</code> 报 <code>Forbidden</code></strong>（<code>User "kubernetes-admin" cannot list ...</code>）→ v1.36 起 kubeadm 用 <code>kubeadm:cluster-admins</code> 组（依赖 RBAC binding，init 中断时 binding 未创建），此时用 <strong><code>super-admin.conf</code></strong> 救急：<code>export KUBECONFIG=/etc/kubernetes/super-admin.conf</code>（该文件用户属于 <code>system:masters</code> 组，内置超级权限），再补建 binding：<code>kubectl create clusterrolebinding kubeadm:cluster-admins --group=kubeadm:cluster-admins --clusterrole=cluster-admin</code></p>
+</blockquote>
+<p><strong>init 成功后务必保存输出末尾的 join 命令</strong>（<code>kubeadm join ... --token ... --discovery-token-ca-cert-hash ...</code>），步骤 7 要用；如果丢了也没关系，可用步骤 7 的方法重新生成。</p>
+<h4 id="6-kubeconfig-master">6. 配置 kubeconfig（仅 master）<a class="headerlink" href="#6-kubeconfig-master" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="nv">$HOME</span>/.kube<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>cp<span class="w"> </span>/etc/kubernetes/admin.conf<span class="w"> </span><span class="nv">$HOME</span>/.kube/config
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="c1"># 写入 ~/.bashrc: export KUBECONFIG=/etc/kubernetes/admin.conf</span>
+</code></pre></div>
+<blockquote>
+<p>⚠️ <strong>如果失败看这里</strong>：<code>cp</code> 报权限错误 → 确认是 root 或在 <code>sudo -i</code> 状态；配完后 <code>kubectl get nodes</code> 报 connection refused → 检查 init 是否真的成功。</p>
+</blockquote>
+<h4 id="7-worker-node2-node3">7. worker 节点加入集群（node2 / node3）<a class="headerlink" href="#7-worker-node2-node3" title="Permanent link">&para;</a></h4>
+<p><strong>先取 join 凭证</strong>（在 master 上执行；<code>kubeadm init</code> 生成的默认 token 有效期只有 24 小时，这条命令随时可重新生成新凭证）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>kubeadm<span class="w"> </span>token<span class="w"> </span>create<span class="w"> </span>--print-join-command
+</code></pre></div>
+<p>会输出类似这样的完整 join 命令：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>kubeadm join 192.168.0.11:6443 --token abcdef.0123456789abcdef \
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>    --discovery-token-ca-cert-hash sha256:1234...cdef
+</code></pre></div>
+<p><strong>再到每台 worker 节点上执行 join</strong>（node2、node3 各执行一次）。<strong>先注入 pause 沙箱镜像</strong>（worker 的 kubelet 创建 Pod 沙箱同样要拉 pause，步骤 5 的坑在 worker 上一样存在）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># 在 worker 节点上：注入 pause 沙箱镜像（与步骤5的②相同，IMAGE_REPO 保持一致）</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="nv">IMAGE_REPO</span><span class="o">=</span>registry.aliyuncs.com/google_containers
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="nv">PAUSE_VER</span><span class="o">=</span><span class="k">$(</span>kubeadm<span class="w"> </span>config<span class="w"> </span>images<span class="w"> </span>list<span class="w"> </span>--image-repository<span class="w"> </span><span class="si">${</span><span class="nv">IMAGE_REPO</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>pause<span class="w"> </span><span class="p">|</span><span class="w"> </span>rev<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d:<span class="w"> </span>-f1<span class="w"> </span><span class="p">|</span><span class="w"> </span>rev<span class="k">)</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>pull<span class="w"> </span><span class="si">${</span><span class="nv">IMAGE_REPO</span><span class="si">}</span>/pause:<span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="k">for</span><span class="w"> </span>v<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span><span class="w"> </span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d.<span class="w"> </span>-f1-2<span class="k">)</span><span class="w"> </span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d.<span class="w"> </span>-f1-2<span class="k">)</span>.1<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">  </span>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>tag<span class="w"> </span><span class="si">${</span><span class="nv">IMAGE_REPO</span><span class="si">}</span>/pause:<span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span><span class="w"> </span>registry.k8s.io/pause:<span class="si">${</span><span class="nv">v</span><span class="si">}</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="k">done</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="c1"># 然后 join（--cri-socket 显式指定，避免探测出错）</span>
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>kubeadm<span class="w"> </span>join<span class="w"> </span><span class="m">192</span>.168.0.11:6443<span class="w"> </span>--token<span class="w"> </span>abcdef.0123456789abcdef<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="w">    </span>--discovery-token-ca-cert-hash<span class="w"> </span>sha256:1234...cdef<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a><span class="w">    </span>--cri-socket<span class="o">=</span>unix:///var/run/containerd/containerd.sock
+</code></pre></div>
+<blockquote>
+<p>⚠️ 注意手动加上 <code>--cri-socket=unix:///var/run/containerd/containerd.sock</code>——如果节点上只装了 containerd（没有额外装 docker），这个参数通常可以省略，kubeadm 会自动探测到唯一的 CRI；但显式指定能避免探测出错，跟正文 <code>kubeadm init</code> 里的写法保持一致。</p>
+<p>⚠️ <strong>如果 join 后节点长期 <code>NotReady</code></strong>：先 <code>kubectl describe node &lt;节点名&gt;</code> 看 Conditions。若 kubelet 报 sandbox 镜像拉取失败 → 确认 pause 注入（上面命令）；若等 CNI 装完才 Ready 属正常（步骤 8 装完 calico 后才会变 Ready）。</p>
+</blockquote>
+<p>看到类似 <code>This node has joined the cluster</code> 的输出即代表加入成功。两台 worker 都 join 完，回到 master 确认：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>nodes
+</code></pre></div>
+<blockquote>
+<p>⚠️ <strong>如果失败看这里</strong>：join 报 <code>token has expired</code> → 回 master 重新执行 <code>kubeadm token create --print-join-command</code>；报 <code>[ERROR CRI]: container runtime is not running</code> → containerd 没装好/没启动，<code>systemctl status containerd</code> 确认；新节点长期 <code>NotReady</code> → CNI 还没装（下一步就装），或镜像加速没配好，<code>kubectl describe node &lt;节点名&gt;</code> 看 Conditions。</p>
+</blockquote>
+<h4 id="8-cnicalico-master">8. 装 CNI（Calico）（仅 master）<a class="headerlink" href="#8-cnicalico-master" title="Permanent link">&para;</a></h4>
+<p><strong>先在 3 台节点上都预拉 calico 镜像</strong>（calico 是 DaemonSet，每个节点都要跑；镜像在 docker.io，走加速站预拉 + tag 成本地镜像，<strong>避免 apply 后 ImagePullBackOff 再逐个排查</strong>；注意实测 <code>docker.1panel.live</code> 对 <code>calico/cni</code> 返回 <strong>403</strong>，所以用多站 fallback 链）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># 3 台节点都执行：预拉 calico 三件套（cni/node/kube-controllers），多加速站 fallback</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="c1"># ACCEL_HOSTS 填前置检查第3步选出的主站 + 备用站（如 docker.1panel.live docker.m.daocloud.io）</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="nv">ACCEL_HOSTS</span><span class="o">=</span><span class="s2">"docker.1panel.live docker.m.daocloud.io docker.jiaxin.site"</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="nv">CALICO_VER</span><span class="o">=</span>v3.29.1
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="k">for</span><span class="w"> </span>img<span class="w"> </span><span class="k">in</span><span class="w"> </span>cni<span class="w"> </span>node<span class="w"> </span>kube-controllers<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="w">  </span><span class="k">for</span><span class="w"> </span>host<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">ACCEL_HOSTS</span><span class="si">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"--- 尝试 </span><span class="si">${</span><span class="nv">host</span><span class="si">}</span><span class="s2">/calico/</span><span class="si">${</span><span class="nv">img</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">CALICO_VER</span><span class="si">}</span><span class="s2"> ---"</span>
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="w">    </span>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>pull<span class="w"> </span><span class="si">${</span><span class="nv">host</span><span class="si">}</span>/calico/<span class="si">${</span><span class="nv">img</span><span class="si">}</span>:<span class="si">${</span><span class="nv">CALICO_VER</span><span class="si">}</span><span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-1
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>list<span class="w"> </span>-q<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">host</span><span class="si">}</span><span class="s2">/calico/</span><span class="si">${</span><span class="nv">img</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">CALICO_VER</span><span class="si">}</span><span class="s2">"</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="w">      </span>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>tag<span class="w"> </span><span class="si">${</span><span class="nv">host</span><span class="si">}</span>/calico/<span class="si">${</span><span class="nv">img</span><span class="si">}</span>:<span class="si">${</span><span class="nv">CALICO_VER</span><span class="si">}</span><span class="w"> </span>docker.io/calico/<span class="si">${</span><span class="nv">img</span><span class="si">}</span>:<span class="si">${</span><span class="nv">CALICO_VER</span><span class="si">}</span>
+<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"&gt;&gt;&gt; </span><span class="si">${</span><span class="nv">img</span><span class="si">}</span><span class="s2"> 就绪"</span>
+<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="w">      </span><span class="k">break</span>
+<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="w">    </span><span class="k">fi</span>
+<a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a><span class="w">  </span><span class="k">done</span>
+<a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a><span class="k">done</span>
+<a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a><span class="c1"># 验证：ctr -n k8s.io images list -q | grep "docker.io/calico"   应看到 cni/node/kube-controllers 三个</span>
+</code></pre></div>
+<p>然后在 master 下载 manifest 并调整 Pod 网段：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>curl<span class="w"> </span>-sL<span class="w"> </span>https://raw.githubusercontent.com/projectcalico/calico/<span class="si">${</span><span class="nv">CALICO_VER</span><span class="si">}</span>/manifests/calico.yaml<span class="w"> </span>-o<span class="w"> </span>/tmp/calico.yaml
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="c1"># 该字段默认被注释掉，需要手工打开注释并把值改成与init时一致的网段。先定位所在行号：</span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>grep<span class="w"> </span>-n<span class="w"> </span><span class="s2">"CALICO_IPV4POOL_CIDR"</span><span class="w"> </span>-A1<span class="w"> </span>/tmp/calico.yaml
+</code></pre></div>
+<p>会看到类似这样的内容（行号可能不同）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="w">            </span><span class="c1"># - name: CALICO_IPV4POOL_CIDR</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">            </span><span class="c1">#   value: "192.168.0.0/16"</span>
+</code></pre></div>
+<p>用 <code>vi</code>/<code>nano</code> 打开文件跳到对应行号，把这两行的 <code>#</code> 去掉，并把网段值改成 <code>10.244.0.0/16</code>（跟 init 时一致），改完再 apply：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>/tmp/calico.yaml
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="c1"># 镜像已在上一步预拉并 tag 成 docker.io/calico/*，kubelet 直接用本地镜像，无需再走网络</span>
+</code></pre></div>
+<blockquote>
+<p>⚠️ <strong>如果失败看这里</strong>：<code>apply</code> 后 Calico Pod 一直 ImagePullBackOff → 先确认 3 台节点的预拉都成功（<code>ctr -n k8s.io images list -q | grep docker.io/calico</code> 三台都要有）；某台缺哪个镜像就回上一步补拉（换 fallback 站）。apply 失败报 schema 错误 → 确认 YAML 里改的是 <code>value</code> 行且格式正确。等 1-3 分钟，<strong>此时所有节点应变为 Ready</strong>：</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>nodes<span class="w"> </span>-o<span class="w"> </span>wide
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-A<span class="w"> </span>-o<span class="w"> </span>wide
+</code></pre></div>
+<h4 id="9-storageclass-08-lab-4">9. 装默认 StorageClass —— 本手册【延迟到 实验 08 Lab 4】安装<a class="headerlink" href="#9-storageclass-08-lab-4" title="Permanent link">&para;</a></h4>
+<blockquote>
+<p><strong>教学顺序说明</strong>：本手册刻意<strong>不在安装阶段装 StorageClass</strong>——"存储类（StorageClass）"是 实验 05 第 4 个实验的核心概念，为了在讲到概念时再动手、避免"没学过就先装好了"，这里跳过。<strong>此时集群没有默认 StorageClass 是正常的</strong>（<code>kubectl get sc</code> 为空）。等到 <strong>实验 08 Lab 4「使用存储类动态交付」</strong> 时再安装（那节有完整安装命令）。</p>
+<p>如果需要提前装（比如想先跑别的需要 PVC 的实验），可手动执行：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>kubectl<span class="w"> </span>patch<span class="w"> </span>storageclass<span class="w"> </span>local-path<span class="w"> </span>-p<span class="w"> </span><span class="s1">'{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'</span>
+</code></pre></div>
+<p>⚠️ <strong>如果失败看这里</strong>：local-path 的 helper Pod 一直 ContainerCreating 最后超时 → 该镜像在 docker.io，确认镜像加速配置，或走「应急方案」曲线导入。</p>
+</blockquote>
+<h4 id="10-master">10. 验证（master）<a class="headerlink" href="#10-master" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>nodes<span class="w">          </span><span class="c1"># 应为3个节点全部Ready</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-A<span class="w">        </span><span class="c1"># 系统Pod应全部Running</span>
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="c1"># 验证CNI+镜像拉取链路通畅</span>
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>kubectl<span class="w"> </span>run<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--image<span class="o">=</span>docker.io/library/busybox<span class="w"> </span>--restart<span class="o">=</span>Never<span class="w"> </span>--<span class="w"> </span>sleep<span class="w"> </span><span class="m">3600</span>
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pod<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-o<span class="w"> </span>wide<span class="w">   </span><span class="c1"># 几秒内应变Running，并注意它被调度到哪个节点（worker）</span>
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>kubectl<span class="w"> </span>delete<span class="w"> </span>pod<span class="w"> </span><span class="nb">test</span><span class="w">        </span><span class="c1"># 验证完清理掉测试Pod</span>
+</code></pre></div>
+<blockquote>
+<p>💡 3 节点环境下，Pod 会被调度到 <strong>worker 节点</strong>（node2/node3）上，master 默认不承载业务负载——这是正常设计，不是故障。若看到 <code>kubectl get nodes</code> 显示 master 有 <code>control-plane</code> 污点导致无法调度，属预期行为，后续 实验 04 会讲如何让 master 承载负载。</p>
+</blockquote>
+<hr />
+<h3 id="_5">常见故障排查清单<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>根因</th>
+<th>解决</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>kubeadm init 卡在 <code>error execution phase wait-control-plane</code>，kubelet 日志报 <code>failed to get sandbox image "registry.k8s.io/pause:xxx"</code></td>
+<td><strong>pause 沙箱镜像拉不到</strong>（kubelet 默认从 registry.k8s.io 拉，国内不可达；<code>--image-repository</code> 不覆盖 kubelet 的沙箱镜像）</td>
+<td>按步骤5的②注入 pause 镜像（ctr 拉国内源 + tag 成 <code>registry.k8s.io/pause:&lt;版本&gt;</code>，<strong>常见版本都 tag</strong>），<code>systemctl restart kubelet</code>，不要急着 reset</td>
+</tr>
+<tr>
+<td>kubeadm init 卡在 <code>error execution phase wait-control-plane</code>（非 pause 报错）</td>
+<td>控制面组件镜像拉取超时</td>
+<td>检查 <code>journalctl -u kubelet</code> 里的 PullImage 报错，换 <code>IMAGE_REPO</code> 后 <code>kubeadm reset -f</code> 重来</td>
+</tr>
+<tr>
+<td><strong>init 失败后 <code>kubectl</code> 报 <code>Forbidden</code>（User "kubernetes-admin" cannot list ...）</strong></td>
+<td>v1.36 起 kubeadm 用 <code>kubeadm:cluster-admins</code> 组（走 RBAC binding），init 中断时 binding 未创建</td>
+<td>用 <code>export KUBECONFIG=/etc/kubernetes/super-admin.conf</code> 救急（system:masters 超级组），补建 <code>kubectl create clusterrolebinding kubeadm:cluster-admins --group=kubeadm:cluster-admins --clusterrole=cluster-admin</code></td>
+</tr>
+<tr>
+<td><strong>worker join 后 kubelet 报 sandbox 镜像拉取失败</strong></td>
+<td>worker 的 pause 镜像没注入</td>
+<td>在 worker 上执行步骤7的 pause 注入命令</td>
+</tr>
+<tr>
+<td><strong>Calico Pod <code>ImagePullBackOff</code>，Events 报 403 Forbidden</strong></td>
+<td>加速站对该镜像受限（实测 <code>docker.1panel.live</code> 对 <code>calico/cni</code> 返回 403）</td>
+<td>按步骤8的多站 fallback 链换站（如 <code>docker.m.daocloud.io</code>）预拉 + tag</td>
+</tr>
+<tr>
+<td>Calico Pod <code>ImagePullBackOff</code>（无 403，纯超时）</td>
+<td>镜像加速没配好 / 该节点没预拉</td>
+<td>确认该节点 hosts.toml 正确（<strong>注意引号不能丢</strong>，见步骤3）与 use_local_image_pull=true；或按步骤8预拉</td>
+</tr>
+<tr>
+<td>Pod 一直 ContainerCreating，Events 显示"Pulling"但 crictl images 显示镜像已存在</td>
+<td>(a) containerd debug 日志级别拖慢处理 (b) use_local_image_pull 配置未生效</td>
+<td>检查 <code>/etc/containerd/config.toml</code> 的 level 改回 info；确认 use_local_image_pull 和 hosts.toml 配置</td>
+</tr>
+<tr>
+<td>PVC 一直 Pending，helper-pod 一直 ContainerCreating 最后超时（实验 08 Lab 4 安装 local-path 时）</td>
+<td>local-path-provisioner 本身镜像被墙（docker.io）</td>
+<td>配置好镜像加速或走曲线导入法</td>
+</tr>
+<tr>
+<td>Pod Pending，Events 显示"Insufficient cpu"</td>
+<td>单节点资源不足</td>
+<td>精简 Pod 数量/减少副本数/升级机器规格</td>
+</tr>
+<tr>
+<td>namespace 卡 Terminating 不消失</td>
+<td>通常是残留 Pod 的 finalizer 依赖已删除的 controller 处理</td>
+<td>先确认 <code>kubectl get all -n &lt;ns&gt;</code> 真的空了，再等一会或强制 delete 残留 Pod</td>
+</tr>
+<tr>
+<td>新节点 join 后长期 NotReady</td>
+<td>CNI 未装或镜像拉不下来；新节点镜像加速没配</td>
+<td>按步骤8装 CNI；在新节点确认 use_local_image_pull 和 hosts.toml，<code>kubectl describe node</code> 看报错</td>
+</tr>
+<tr>
+<td>worker 与 master 版本不一致</td>
+<td>动态获取"最新版"间隔较长导致版本漂移</td>
+<td>worker 手动指定与 master 一致的版本号（见附录C），跨版本窗口 ±1 个小版本</td>
+</tr>
+</tbody>
+</table>
+<p>以下这条不是K8s特有问题，是Linux环境的通用坑，一并收录方便查阅：</p>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>根因</th>
+<th>解决</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>kubectl 在原生 shell 里提示 command not found 但文件存在</td>
+<td>极可能是 <code>~/.bashrc</code> 里 PATH 被意外覆盖（没有正确拼接 <code>$PATH</code>）</td>
+<td>检查 <code>.bashrc</code>/<code>.profile</code> 找出错误的 <code>export PATH=...</code> 赋值行并修复</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="ghcrio">应急方案：海外源（ghcr.io 等）镜像曲线导入法<a class="headerlink" href="#ghcrio" title="Permanent link">&para;</a></h3>
+<p>当某个特定镜像域名没有国内 CDN 代理、直连又慢到几分钟都拉不完时（<code>ghcr.io</code>、<code>registry.k8s.io</code> 之外的自定义镜像仓库等）：</p>
+<p><strong>1. 找一台网络更好的机器</strong>（如本地 WSL、开发机，实测可能有 7-8MB/s+ 的国际带宽）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>pull<span class="w"> </span>--platform<span class="w"> </span>linux/amd64<span class="w"> </span>&lt;慢速镜像&gt;<span class="w">  </span><span class="c1"># 只拉需要的架构，减小体积</span>
+</code></pre></div>
+<p><strong>2. 导出为 tar</strong>：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span><span class="nb">export</span><span class="w"> </span>--platform<span class="w"> </span>linux/amd64<span class="w"> </span>/tmp/xxx.tar<span class="w"> </span>&lt;镜像地址&gt;
+</code></pre></div>
+<p><strong>3. scp 传到目标机器</strong>（国内到国内传输通常很快，13MB/s+）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>scp<span class="w"> </span>/tmp/xxx.tar<span class="w"> </span>root@&lt;目标IP&gt;:/tmp/
+</code></pre></div>
+<p><strong>4. 在目标机器导入</strong>：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>import<span class="w"> </span>/tmp/xxx.tar
+</code></pre></div>
+<p><strong>5. 重建对应 Pod</strong>（imagePullPolicy 为 IfNotPresent 时会直接用本地镜像，不再联网）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>kubectl<span class="w"> </span>delete<span class="w"> </span>pod<span class="w"> </span>&lt;pod名&gt;<span class="w"> </span>--force<span class="w"> </span>--grace-period<span class="o">=</span><span class="m">0</span>
+</code></pre></div>
+<blockquote>
+<p><strong>注意</strong>：大镜像（300MB+）在 target 机器上 <code>ctr images import</code> 偶尔会莫名卡住不动（CPU/IO 都空闲，进程处于 sleeping 状态），此时表现为长时间无响应。这是本次实测中观察到的现象，具体成因未深究（可能与containerd版本、磁盘IO、镜像层数有关），遇到这种情况直接 kill 掉重试一次通常能解决，不必死等，但不保证百分百有效。</p>
+</blockquote>
+<hr />
+<h3 id="adockerio">附录A：docker.io 镜像加速站实测清单<a class="headerlink" href="#adockerio" title="Permanent link">&para;</a></h3>
+<h4 id="_6">测试方法（可复用于验证新的加速站候选）<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="c1"># 1. 连通性测试</span>
+<a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">"http=%{http_code} time=%{time_total}s\n"</span><span class="w"> </span>--max-time<span class="w"> </span><span class="m">8</span><span class="w"> </span>https://&lt;候选站&gt;/v2/
+<a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>
+<a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a><span class="c1"># 2. 配置为containerd镜像源</span>
+<a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/etc/containerd/certs.d/docker.io/hosts.toml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a><span class="s">server = "https://docker.io"</span>
+<a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a><span class="s">[host."https://&lt;候选站&gt;"]</span>
+<a id="__codelineno-30-8" name="__codelineno-30-8" href="#__codelineno-30-8"></a><span class="s">  capabilities = ["pull", "resolve"]</span>
+<a id="__codelineno-30-9" name="__codelineno-30-9" href="#__codelineno-30-9"></a><span class="s">EOF</span>
+<a id="__codelineno-30-10" name="__codelineno-30-10" href="#__codelineno-30-10"></a>systemctl<span class="w"> </span>restart<span class="w"> </span>containerd
+<a id="__codelineno-30-11" name="__codelineno-30-11" href="#__codelineno-30-11"></a>
+<a id="__codelineno-30-12" name="__codelineno-30-12" href="#__codelineno-30-12"></a><span class="c1"># 3. 清缓存后真实拉取测试（一个官方镜像 + 一个个人命名空间镜像，两类都要测）</span>
+<a id="__codelineno-30-13" name="__codelineno-30-13" href="#__codelineno-30-13"></a>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>rm<span class="w"> </span>docker.io/library/nginx:latest<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+<a id="__codelineno-30-14" name="__codelineno-30-14" href="#__codelineno-30-14"></a>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>rm<span class="w"> </span>docker.io/&lt;user&gt;/&lt;repo&gt;:latest<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+<a id="__codelineno-30-15" name="__codelineno-30-15" href="#__codelineno-30-15"></a><span class="nb">time</span><span class="w"> </span>crictl<span class="w"> </span>--runtime-endpoint<span class="w"> </span>unix:///var/run/containerd/containerd.sock<span class="w"> </span>pull<span class="w"> </span>nginx:latest
+<a id="__codelineno-30-16" name="__codelineno-30-16" href="#__codelineno-30-16"></a><span class="nb">time</span><span class="w"> </span>crictl<span class="w"> </span>--runtime-endpoint<span class="w"> </span>unix:///var/run/containerd/containerd.sock<span class="w"> </span>pull<span class="w"> </span>&lt;user&gt;/&lt;repo&gt;:latest
+</code></pre></div>
+<blockquote>
+<p>注意：加速站的可用性和限流策略会随时间变化，这份清单有时效性，正式使用前建议重新跑一遍上述测试脚本验证。</p>
+</blockquote>
+<h4 id="2026-07-22-dongyubindockerhub">实测结果（2026-07-22，华为云虚机，来源清单参考 <a href="https://github.com/dongyubin/DockerHub">dongyubin/DockerHub</a>）<a class="headerlink" href="#2026-07-22-dongyubindockerhub" title="Permanent link">&para;</a></h4>
+<p>测试对象：官方镜像（<code>nginx</code>、<code>postgres</code>，即 <code>library/xxx</code>）+ 个人命名空间镜像（<code>chengzh/backend</code>、<code>chengzh/frontend</code>、<code>katacoda/docker-http-server</code>，即 <code>user/repo</code> 格式）</p>
+<table>
+<thead>
+<tr>
+<th>加速站</th>
+<th>连通性</th>
+<th>官方镜像</th>
+<th>个人命名空间镜像</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>docker.1panel.live</code></strong></td>
+<td>通</td>
+<td>✅ 1.5s</td>
+<td>✅ 4.1s</td>
+<td><strong>全部可用，速度快，推荐</strong></td>
+</tr>
+<tr>
+<td><strong><code>proxy.vvvv.ee</code></strong></td>
+<td>通</td>
+<td>✅ 2.1s</td>
+<td>✅ 2.3s</td>
+<td><strong>全部可用，速度快，推荐</strong></td>
+</tr>
+<tr>
+<td><strong><code>docker.jiaxin.site</code></strong></td>
+<td>通</td>
+<td>✅ 2.8s</td>
+<td>✅ 2.1s</td>
+<td><strong>全部可用，速度快，推荐</strong></td>
+</tr>
+<tr>
+<td><strong><code>free.hubfast.cn</code></strong></td>
+<td>通</td>
+<td>✅ 2.8s</td>
+<td>✅ 1.6s</td>
+<td><strong>全部可用，速度快，推荐</strong></td>
+</tr>
+<tr>
+<td><code>dockerproxy.net</code></td>
+<td>通</td>
+<td>✅ \~20s</td>
+<td>✅ 2s\~60s（波动大）</td>
+<td>全部可用，但速度不稳定</td>
+</tr>
+<tr>
+<td><code>docker.m.daocloud.io</code></td>
+<td>通</td>
+<td>✅ 成功</td>
+<td>❌ 403 Forbidden</td>
+<td>官方可用，个人命名空间必403</td>
+</tr>
+<tr>
+<td><code>docker.xuanyuan.me</code></td>
+<td>通</td>
+<td>✅ 0.8s</td>
+<td>❌ 429 Too Many Requests（稳定复现，重试仍429）</td>
+<td>官方可用，个人镜像被限流</td>
+</tr>
+<tr>
+<td><code>docker.1ms.run</code></td>
+<td>通</td>
+<td>✅（同一批次测试中通过）</td>
+<td>❌ 404（白名单机制，不在白名单里的直接404）</td>
+<td>只镜像热门白名单镜像</td>
+</tr>
+<tr>
+<td><code>dockerproxy.link</code></td>
+<td>通</td>
+<td>❌ size validation failed（数据损坏）</td>
+<td>❌ 同样失败</td>
+<td>不可用，返回内容与声明大小不符</td>
+</tr>
+<tr>
+<td><code>registry.cyou</code></td>
+<td>❌ 无法建立连接</td>
+<td>-</td>
+<td>-</td>
+<td>不可用</td>
+</tr>
+<tr>
+<td><code>mirror.houlang.cloud</code></td>
+<td>❌ 超时（需登录token）</td>
+<td>-</td>
+<td>-</td>
+<td>不可用（需额外注册）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>推荐优先级</strong>：<code>docker.1panel.live</code> / <code>proxy.vvvv.ee</code> / <code>docker.jiaxin.site</code> / <code>free.hubfast.cn</code>，可以配置多个做 fallback。</p>
+<p>国内镜像加速列表持续更新参考：https://github.com/dongyubin/DockerHub</p>
+<hr />
+<h3 id="b">附录B：镜像加速配置的原理笔记<a class="headerlink" href="#b" title="Permanent link">&para;</a></h3>
+<p>这里记录正文「步骤3」和「步骤4」背后的排障过程和原理，仅供理解/排查参考，不影响正常部署照抄正文操作。</p>
+<h4 id="use_local_image_pull">为什么要改 <code>use_local_image_pull</code><a class="headerlink" href="#use_local_image_pull" title="Permanent link">&para;</a></h4>
+<p><code>/etc/containerd/certs.d/&lt;domain&gt;/hosts.toml</code> 是 containerd 传统的 mirror 配置方式，但在 <strong>containerd 2.x 版本里可能不生效</strong>——因为新版本默认走一条新的 transfer service 拉取路径，这条路径不读取 certs.d 目录下的配置。</p>
+<p>排障时的关键线索：开启 containerd debug 日志（<code>config.toml</code> 中 <code>level = 'debug'</code>）后能看到日志显示走的是 <code>resolving host=registry-1.docker.io</code>，即镜像拉取压根没有经过配置的加速地址。</p>
+<p>根因定位：<code>/etc/containerd/config.toml</code> 中 <code>use_local_image_pull = false</code>（这是新版本的默认值）时走新的 transfer service，忽略 hosts.toml；改成 <code>true</code> 后才会走老的 CRI pull 路径，认 hosts.toml 配置。</p>
+<p><strong>踩坑复盘</strong>：这个开关如果为了某次应急排障被临时改回 <code>false</code>，一定要记得在问题解决后改回 <code>true</code>，否则会"复发"——表现为"明明配置过加速，怎么又变慢了"。可以用 <code>grep use_local_image_pull /etc/containerd/config.toml</code> 快速自检这个状态有没有被意外改回。</p>
+<h4 id="pkgsk8sio">关于 <code>pkgs.k8s.io</code> 连通性的实测背景<a class="headerlink" href="#pkgsk8sio" title="Permanent link">&para;</a></h4>
+<p><code>pkgs.k8s.io</code> 背后是 Google 主导的 CDN，跟拉取镜像用的 <code>registry.k8s.io</code> 属于同一基础设施家族。这次在华为云虚机上实测是通的（<code>curl -I https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release</code> 返回302，<code>apt-get install</code> 一次性成功），但这只是单次、单台机器的验证结果——<code>pkgs.k8s.io</code> 的国内可达性完全可能因机房、运营商出口路由不同而表现不一致，换一台机器/换一个云厂商不能假设默认能通，一定要现场测试。</p>
+<hr />
+<h3 id="c">附录C：实测部署的组件版本汇总<a class="headerlink" href="#c" title="Permanent link">&para;</a></h3>
+<p>以下是 <strong>2026-08 在 3 台国内云主机（Ubuntu 24.04）上从零实测通过</strong>的一套组件版本组合，供复现参考：</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>版本</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>操作系统</td>
+<td>Ubuntu 24.04.4 LTS</td>
+<td>4核 / 8GB内存 / 40GB磁盘（手册约定 2核4G 也能跑，资源更紧）</td>
+</tr>
+<tr>
+<td>Kubernetes（kubelet/kubeadm/kubectl）</td>
+<td>v1.36.3</td>
+<td>通过 <code>dl.k8s.io/release/stable.txt</code> 动态获取的"当前最新稳定版"（实测时刻）</td>
+</tr>
+<tr>
+<td>containerd</td>
+<td>2.2.1</td>
+<td>apt 默认源安装的版本</td>
+</tr>
+<tr>
+<td>CNI：Calico</td>
+<td>v3.29.1</td>
+<td>manifest 版本，<code>docker.io/calico/*</code> 三件套（cni/node/kube-controllers）需预拉 + tag</td>
+</tr>
+<tr>
+<td>CRI 镜像仓库（控制面组件）</td>
+<td>registry.aliyuncs.com/google_containers</td>
+<td>本次实测 registry.k8s.io 不可达才用；其他环境按前置检查第3步测试，可达就用官方源</td>
+</tr>
+<tr>
+<td>存储：local-path-provisioner</td>
+<td>rancher/local-path-provisioner（master 分支 manifest）</td>
+<td><strong>本手册按教学顺序在 实验 08 Lab 4 安装</strong>（安装阶段不装）</td>
+</tr>
+<tr>
+<td>metrics-server</td>
+<td>v0.9.0（components.yaml 最新版）</td>
+<td>需追加 <code>--kubelet-insecure-tls</code> 参数（见 实验 05 Lab 1，sed 定位注意端口可能不是 4443）</td>
+</tr>
+<tr>
+<td>Pod 网段</td>
+<td>10.244.0.0/16</td>
+<td>需与节点自身网段（常见 192.168.x.x/24）区分开</td>
+</tr>
+<tr>
+<td>docker.io 镜像加速站</td>
+<td>docker.1panel.live（主）+ docker.m.daocloud.io（备）</td>
+<td>实测 1panel 对部分镜像（如 calico/cni）403，需备站</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>版本号随时间变化</strong>（"最新稳定版"会持续推进），<strong>不要照抄此表</strong>——新部署一律用文档里的动态获取方式（<code>curl -sL https://dl.k8s.io/release/stable.txt</code> 拿当时最新版），本表只证明这套组合在实测时刻可协同工作。</p>
+</blockquote>
+<hr />
+<h3 id="dworker">附录D：worker 节点一键就绪脚本<a class="headerlink" href="#dworker" title="Permanent link">&para;</a></h3>
+<p>如果觉得步骤 1-4 在三台节点上逐条执行太繁琐，可以把它们合并成一段脚本，在<strong>新 worker 节点</strong>上执行，跑完后节点环境就绪、等待 join：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="ch">#!/bin/bash</span>
+<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="nb">set</span><span class="w"> </span>-e
+<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>
+<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a><span class="c1"># 可配置项（先做前置检查第3步的预测试再填）：</span>
+<a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a><span class="nv">ACCEL_HOST</span><span class="o">=</span><span class="s2">"docker.1panel.live"</span><span class="w">          </span><span class="c1"># 主加速站（前置检查选出）</span>
+<a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a><span class="nv">IMAGE_REPO</span><span class="o">=</span><span class="s2">"registry.aliyuncs.com/google_containers"</span><span class="w">   </span><span class="c1"># 控制面镜像仓库（registry.k8s.io 不通时）</span>
+<a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a>
+<a id="__codelineno-31-8" name="__codelineno-31-8" href="#__codelineno-31-8"></a><span class="c1"># ===== 步骤1：系统准备 =====</span>
+<a id="__codelineno-31-9" name="__codelineno-31-9" href="#__codelineno-31-9"></a>swapoff<span class="w"> </span>-a
+<a id="__codelineno-31-10" name="__codelineno-31-10" href="#__codelineno-31-10"></a>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">'/ swap /s/^/#/'</span><span class="w"> </span>/etc/fstab
+<a id="__codelineno-31-11" name="__codelineno-31-11" href="#__codelineno-31-11"></a>
+<a id="__codelineno-31-12" name="__codelineno-31-12" href="#__codelineno-31-12"></a>cat<span class="w"> </span><span class="s">&lt;&lt;EOF | tee /etc/modules-load.d/k8s.conf</span>
+<a id="__codelineno-31-13" name="__codelineno-31-13" href="#__codelineno-31-13"></a><span class="s">overlay</span>
+<a id="__codelineno-31-14" name="__codelineno-31-14" href="#__codelineno-31-14"></a><span class="s">br_netfilter</span>
+<a id="__codelineno-31-15" name="__codelineno-31-15" href="#__codelineno-31-15"></a><span class="s">EOF</span>
+<a id="__codelineno-31-16" name="__codelineno-31-16" href="#__codelineno-31-16"></a>modprobe<span class="w"> </span>overlay
+<a id="__codelineno-31-17" name="__codelineno-31-17" href="#__codelineno-31-17"></a>modprobe<span class="w"> </span>br_netfilter
+<a id="__codelineno-31-18" name="__codelineno-31-18" href="#__codelineno-31-18"></a>
+<a id="__codelineno-31-19" name="__codelineno-31-19" href="#__codelineno-31-19"></a>cat<span class="w"> </span><span class="s">&lt;&lt;EOF | tee /etc/sysctl.d/k8s.conf</span>
+<a id="__codelineno-31-20" name="__codelineno-31-20" href="#__codelineno-31-20"></a><span class="s">net.bridge.bridge-nf-call-iptables  = 1</span>
+<a id="__codelineno-31-21" name="__codelineno-31-21" href="#__codelineno-31-21"></a><span class="s">net.bridge.bridge-nf-call-ip6tables = 1</span>
+<a id="__codelineno-31-22" name="__codelineno-31-22" href="#__codelineno-31-22"></a><span class="s">net.ipv4.ip_forward                 = 1</span>
+<a id="__codelineno-31-23" name="__codelineno-31-23" href="#__codelineno-31-23"></a><span class="s">EOF</span>
+<a id="__codelineno-31-24" name="__codelineno-31-24" href="#__codelineno-31-24"></a>sysctl<span class="w"> </span>--system
+<a id="__codelineno-31-25" name="__codelineno-31-25" href="#__codelineno-31-25"></a>
+<a id="__codelineno-31-26" name="__codelineno-31-26" href="#__codelineno-31-26"></a>apt-get<span class="w"> </span>update<span class="w"> </span>-qq
+<a id="__codelineno-31-27" name="__codelineno-31-27" href="#__codelineno-31-27"></a>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>-qq<span class="w"> </span>apt-transport-https<span class="w"> </span>ca-certificates<span class="w"> </span>curl<span class="w"> </span>gnupg
+<a id="__codelineno-31-28" name="__codelineno-31-28" href="#__codelineno-31-28"></a>
+<a id="__codelineno-31-29" name="__codelineno-31-29" href="#__codelineno-31-29"></a><span class="c1"># ===== 步骤2：装containerd =====</span>
+<a id="__codelineno-31-30" name="__codelineno-31-30" href="#__codelineno-31-30"></a>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>-qq<span class="w"> </span>containerd
+<a id="__codelineno-31-31" name="__codelineno-31-31" href="#__codelineno-31-31"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/etc/containerd
+<a id="__codelineno-31-32" name="__codelineno-31-32" href="#__codelineno-31-32"></a>containerd<span class="w"> </span>config<span class="w"> </span>default<span class="w"> </span>&gt;<span class="w"> </span>/etc/containerd/config.toml
+<a id="__codelineno-31-33" name="__codelineno-31-33" href="#__codelineno-31-33"></a>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">'s/SystemdCgroup = false/SystemdCgroup = true/'</span><span class="w"> </span>/etc/containerd/config.toml
+<a id="__codelineno-31-34" name="__codelineno-31-34" href="#__codelineno-31-34"></a>systemctl<span class="w"> </span>restart<span class="w"> </span>containerd
+<a id="__codelineno-31-35" name="__codelineno-31-35" href="#__codelineno-31-35"></a>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>containerd
+<a id="__codelineno-31-36" name="__codelineno-31-36" href="#__codelineno-31-36"></a>
+<a id="__codelineno-31-37" name="__codelineno-31-37" href="#__codelineno-31-37"></a><span class="c1"># ===== 步骤3：配置docker.io镜像加速 =====</span>
+<a id="__codelineno-31-38" name="__codelineno-31-38" href="#__codelineno-31-38"></a>sed<span class="w"> </span>-i<span class="w"> </span><span class="s2">"s/use_local_image_pull = false/use_local_image_pull = true/"</span><span class="w"> </span>/etc/containerd/config.toml
+<a id="__codelineno-31-39" name="__codelineno-31-39" href="#__codelineno-31-39"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/etc/containerd/certs.d/docker.io
+<a id="__codelineno-31-40" name="__codelineno-31-40" href="#__codelineno-31-40"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/etc/containerd/certs.d/docker.io/hosts.toml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<a id="__codelineno-31-41" name="__codelineno-31-41" href="#__codelineno-31-41"></a><span class="s">server = "https://docker.io"</span>
+<a id="__codelineno-31-42" name="__codelineno-31-42" href="#__codelineno-31-42"></a><span class="s">[host."https://${ACCEL_HOST}"]</span>
+<a id="__codelineno-31-43" name="__codelineno-31-43" href="#__codelineno-31-43"></a><span class="s">  capabilities = ["pull", "resolve"]</span>
+<a id="__codelineno-31-44" name="__codelineno-31-44" href="#__codelineno-31-44"></a><span class="s">EOF</span>
+<a id="__codelineno-31-45" name="__codelineno-31-45" href="#__codelineno-31-45"></a>systemctl<span class="w"> </span>restart<span class="w"> </span>containerd
+<a id="__codelineno-31-46" name="__codelineno-31-46" href="#__codelineno-31-46"></a>
+<a id="__codelineno-31-47" name="__codelineno-31-47" href="#__codelineno-31-47"></a><span class="c1"># ===== 步骤4：装kubelet/kubeadm/kubectl（当前最新稳定版）=====</span>
+<a id="__codelineno-31-48" name="__codelineno-31-48" href="#__codelineno-31-48"></a><span class="nv">LATEST</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-sL<span class="w"> </span>https://dl.k8s.io/release/stable.txt<span class="k">)</span>
+<a id="__codelineno-31-49" name="__codelineno-31-49" href="#__codelineno-31-49"></a><span class="nv">MINOR</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"</span><span class="nv">$LATEST</span><span class="s2">"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-E<span class="w"> </span><span class="s1">'s/^v([0-9]+\.[0-9]+)\..*/\1/'</span><span class="k">)</span>
+<a id="__codelineno-31-50" name="__codelineno-31-50" href="#__codelineno-31-50"></a>
+<a id="__codelineno-31-51" name="__codelineno-31-51" href="#__codelineno-31-51"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/etc/apt/keyrings
+<a id="__codelineno-31-52" name="__codelineno-31-52" href="#__codelineno-31-52"></a>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://pkgs.k8s.io/core:/stable:/v<span class="si">${</span><span class="nv">MINOR</span><span class="si">}</span>/deb/Release.key<span class="w"> </span><span class="p">|</span><span class="w"> </span>gpg<span class="w"> </span>--batch<span class="w"> </span>--dearmor<span class="w"> </span>-o<span class="w"> </span>/etc/apt/keyrings/kubernetes-apt-keyring.gpg
+<a id="__codelineno-31-53" name="__codelineno-31-53" href="#__codelineno-31-53"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">"deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v</span><span class="si">${</span><span class="nv">MINOR</span><span class="si">}</span><span class="s2">/deb/ /"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>/etc/apt/sources.list.d/kubernetes.list
+<a id="__codelineno-31-54" name="__codelineno-31-54" href="#__codelineno-31-54"></a>
+<a id="__codelineno-31-55" name="__codelineno-31-55" href="#__codelineno-31-55"></a>apt-get<span class="w"> </span>update<span class="w"> </span>-qq
+<a id="__codelineno-31-56" name="__codelineno-31-56" href="#__codelineno-31-56"></a>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>-qq<span class="w"> </span>kubelet<span class="w"> </span>kubeadm<span class="w"> </span>kubectl
+<a id="__codelineno-31-57" name="__codelineno-31-57" href="#__codelineno-31-57"></a>apt-mark<span class="w"> </span>hold<span class="w"> </span>kubelet<span class="w"> </span>kubeadm<span class="w"> </span>kubectl
+<a id="__codelineno-31-58" name="__codelineno-31-58" href="#__codelineno-31-58"></a>
+<a id="__codelineno-31-59" name="__codelineno-31-59" href="#__codelineno-31-59"></a><span class="c1"># ===== 步骤5：注入 pause 沙箱镜像（关键，防 join 后 sandbox 拉取失败）=====</span>
+<a id="__codelineno-31-60" name="__codelineno-31-60" href="#__codelineno-31-60"></a><span class="nv">PAUSE_VER</span><span class="o">=</span><span class="k">$(</span>kubeadm<span class="w"> </span>config<span class="w"> </span>images<span class="w"> </span>list<span class="w"> </span>--image-repository<span class="w"> </span><span class="si">${</span><span class="nv">IMAGE_REPO</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>pause<span class="w"> </span><span class="p">|</span><span class="w"> </span>rev<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d:<span class="w"> </span>-f1<span class="w"> </span><span class="p">|</span><span class="w"> </span>rev<span class="k">)</span>
+<a id="__codelineno-31-61" name="__codelineno-31-61" href="#__codelineno-31-61"></a>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>pull<span class="w"> </span><span class="si">${</span><span class="nv">IMAGE_REPO</span><span class="si">}</span>/pause:<span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span>
+<a id="__codelineno-31-62" name="__codelineno-31-62" href="#__codelineno-31-62"></a><span class="k">for</span><span class="w"> </span>v<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span><span class="w"> </span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d.<span class="w"> </span>-f1-2<span class="k">)</span><span class="w"> </span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d.<span class="w"> </span>-f1-2<span class="k">)</span>.1<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-31-63" name="__codelineno-31-63" href="#__codelineno-31-63"></a><span class="w">  </span>ctr<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>tag<span class="w"> </span><span class="si">${</span><span class="nv">IMAGE_REPO</span><span class="si">}</span>/pause:<span class="si">${</span><span class="nv">PAUSE_VER</span><span class="si">}</span><span class="w"> </span>registry.k8s.io/pause:<span class="si">${</span><span class="nv">v</span><span class="si">}</span>
+<a id="__codelineno-31-64" name="__codelineno-31-64" href="#__codelineno-31-64"></a><span class="k">done</span>
+<a id="__codelineno-31-65" name="__codelineno-31-65" href="#__codelineno-31-65"></a>
+<a id="__codelineno-31-66" name="__codelineno-31-66" href="#__codelineno-31-66"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">"=== 节点环境就绪，等待 join ==="</span>
+<a id="__codelineno-31-67" name="__codelineno-31-67" href="#__codelineno-31-67"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">"join 命令在 master 上执行: kubeadm token create --print-join-command"</span>
+</code></pre></div>
+<blockquote>
+<p>⚠️ 跟正文一样，<strong>先做前置检查再跑这个脚本</strong>：如果这台新节点的 <code>pkgs.k8s.io</code> 不通，脚本里的下载会失败，需要按正文步骤4的方法换成阿里云的 kubernetes apt 镜像源。如果 K8s 版本要跟 master 保持一致（强烈建议同版本），可以跳过 <code>LATEST</code>/<code>MINOR</code> 的动态获取，改成写死 master 当时用的版本号（见附录C）。</p>
+<p>⚠️ <strong>实测补充</strong>：① 脚本已加 <code>gpg --batch</code>（无 TTY 环境必需）；② 若 <code>apt-get update</code> 报 GPG 错误或 <code>Release.key</code> 下载损坏（<code>gpg: no valid OpenPGP data</code>）→ 删掉 <code>/etc/apt/keyrings/kubernetes-apt-keyring.gpg</code> 后重跑本段即可（网络波动导致，重试通常成功）；③ <strong>本脚本已验证可让一台全新 worker 直接加入集群</strong>（含 pause 注入），join 后等 CNI 装好即 Ready。</p>
+</blockquote>
+<hr />
+<h3 id="e">附录E：单节点快速安装（可选）<a class="headerlink" href="#e" title="Permanent link">&para;</a></h3>
+<p>如果只有一台机器，只想快速体验 K8s，可以按正文的步骤 1-6 装好 master 后，<strong>跳过步骤 7（不需要 worker）</strong>，然后：</p>
+<p><strong>1. 去掉 master 的调度污点</strong>（否则 Pod 调度不上）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>kubectl<span class="w"> </span>taint<span class="w"> </span>nodes<span class="w"> </span>--all<span class="w"> </span>node-role.kubernetes.io/control-plane-
+</code></pre></div>
+<p><strong>2. 继续步骤 8 装 CNI，步骤 10 验证</strong>（StorageClass 按教学顺序在 实验 08 Lab 4 安装）。</p>
+<blockquote>
+<p>单节点下 Pod 会调度到 master 本机。注意：<strong>该形态与后续章节（02-09）默认的 3 节点环境不一致</strong>（单节点没有跨节点调度、没有多节点网络与 NFS 存储实验），仅适合快速体验或资源受限场景。</p>
+</blockquote>
+<h2 id="_7">使用在线沙盒<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>如果没有足够的硬件资源,可以考虑使用 https://killercoda.com/ 提供的 <a href="https://killercoda.com/playgrounds/scenario/kubernetes">Kubernetes Playground</a> ,目前已经支持最新的 <code>1.36</code> 版本.</p>
+<p>使用要点:</p>
+<ul>
+<li>建议使用 <code>Github</code> 账号进行注册,体验最好.</li>
+<li>如果没有 <code>Github</code> 账号,可以使用国内的信箱进行注册,但是可能会在开启场景的时候用邮件再次激活.</li>
+<li>每个场景最长运行时间是1小时.</li>
+<li>目前 Playground 环境免费.</li>
+</ul>
+<h2 id="kubectl">Kubectl 基础与公共操作<a class="headerlink" href="#kubectl" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>本章节是后续所有章节（02-09）的<strong>公共基础</strong>：kubectl 命令体系、yaml 基本语法、命名空间、标签与选择器、上下文切换。后续章节不再重复讲解，直接引用本节。</p>
+</blockquote>
+<h3 id="1-kubectl">1. kubectl 命令体系<a class="headerlink" href="#1-kubectl" title="Permanent link">&para;</a></h3>
+<p>kubectl 是操作 Kubernetes 的唯一命令行工具，命令格式统一为：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>kubectl &lt;操作动词&gt; &lt;资源类型&gt; [资源名] [flags]
+</code></pre></div>
+<p><strong>常用操作动词</strong>（作用于任意资源）：</p>
+<table>
+<thead>
+<tr>
+<th>动词</th>
+<th>作用</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>get</code></td>
+<td>查看资源列表</td>
+<td><code>kubectl get pods</code></td>
+</tr>
+<tr>
+<td><code>describe</code></td>
+<td>查看资源详细信息</td>
+<td><code>kubectl describe pod nginx</code></td>
+</tr>
+<tr>
+<td><code>create</code></td>
+<td>创建资源（命令式）</td>
+<td><code>kubectl create ns lab</code></td>
+</tr>
+<tr>
+<td><code>apply</code></td>
+<td>创建/更新资源（声明式，yaml）</td>
+<td><code>kubectl apply -f deploy.yaml</code></td>
+</tr>
+<tr>
+<td><code>delete</code></td>
+<td>删除资源</td>
+<td><code>kubectl delete pod nginx</code></td>
+</tr>
+<tr>
+<td><code>logs</code></td>
+<td>查看 Pod 日志</td>
+<td><code>kubectl logs nginx</code></td>
+</tr>
+<tr>
+<td><code>exec</code></td>
+<td>进入 Pod 执行命令</td>
+<td><code>kubectl exec -it nginx -- bash</code></td>
+</tr>
+<tr>
+<td><code>edit</code></td>
+<td>在线编辑资源</td>
+<td><code>kubectl edit deployment nginx</code></td>
+</tr>
+<tr>
+<td><code>label</code></td>
+<td>增删改标签</td>
+<td><code>kubectl label pod nginx app=web</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>常用输出参数</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-o wide</code></td>
+<td>显示更多列（IP、节点等）</td>
+</tr>
+<tr>
+<td><code>-o yaml</code></td>
+<td>输出资源定义（yaml 格式）</td>
+</tr>
+<tr>
+<td><code>-o json</code></td>
+<td>输出资源定义（json 格式）</td>
+</tr>
+<tr>
+<td><code>-n &lt;namespace&gt;</code></td>
+<td>指定命名空间</td>
+</tr>
+<tr>
+<td><code>-A</code> / <code>--all-namespaces</code></td>
+<td>所有命名空间</td>
+</tr>
+<tr>
+<td><code>-w</code></td>
+<td>持续监听变化</td>
+</tr>
+<tr>
+<td><code>--dry-run=client -o yaml</code></td>
+<td>只生成 yaml 不创建（教学利器）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2_1">2. 命名空间<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h3>
+<p>命名空间（namespace）用于<strong>逻辑隔离</strong>资源。默认资源在 <code>default</code> 命名空间，系统组件在 <code>kube-system</code>。</p>
+<p>查看集群状态</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>node<span class="w"> </span>-o<span class="w"> </span>wide
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pod<span class="w"> </span>-o<span class="w"> </span>wide
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pod<span class="w"> </span>-A<span class="w"> </span>-o<span class="w"> </span>wide<span class="w">        </span><span class="c1"># 所有命名空间</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>ns
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pod<span class="w"> </span>-n<span class="w"> </span>kube-system<span class="w">    </span><span class="c1"># 指定命名空间</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pod<span class="w"> </span>-n<span class="w"> </span>kube-system<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>calico
+</code></pre></div>
+<p>创建命名空间</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>kubectl<span class="w"> </span>create<span class="w"> </span>ns<span class="w"> </span>lab
+</code></pre></div>
+<p>查看命名空间</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>ns<span class="w"> </span>-o<span class="w"> </span>wide
+</code></pre></div>
+<p>查看命名空间详细信息</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>kubectl<span class="w"> </span>describe<span class="w"> </span>ns<span class="w"> </span>kube-system
+</code></pre></div>
+<p>查看命名空间的定义文件</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>ns<span class="w"> </span>lab<span class="w"> </span>-o<span class="w"> </span>yaml
+</code></pre></div>
+<h3 id="3-yaml">3. yaml 基本语法与工作流<a class="headerlink" href="#3-yaml" title="Permanent link">&para;</a></h3>
+<p>Kubernetes 一切资源都是声明式对象，用 yaml 描述"期望状态"。<strong>本手册的教学原则</strong>：简单操作用命令行，涉及多对象/复杂结构（卷、探针、多容器、Deployment 等）用 yaml 文件。</p>
+<p><strong>yaml 文件通用结构</strong>（所有资源一致）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w">        </span><span class="c1"># API 版本（资源类型决定）</span>
+<a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span><span class="w">           </span><span class="c1"># 资源类型</span>
+<a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a><span class="nt">metadata</span><span class="p">:</span><span class="w">                  </span><span class="c1"># 元数据（名称、命名空间、标签）</span>
+<a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp</span>
+<a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a><span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<a id="__codelineno-44-7" name="__codelineno-44-7" href="#__codelineno-44-7"></a><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp</span>
+<a id="__codelineno-44-8" name="__codelineno-44-8" href="#__codelineno-44-8"></a><span class="nt">spec</span><span class="p">:</span><span class="w">                      </span><span class="c1"># 期望状态（每种资源不同）</span>
+<a id="__codelineno-44-9" name="__codelineno-44-9" href="#__codelineno-44-9"></a><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</code></pre></div>
+<p><strong>推荐工作流</strong>（先命令生成骨架，再修改，再 apply）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>kubectl<span class="w"> </span>create<span class="w"> </span>deployment<span class="w"> </span>myapp<span class="w"> </span>--image<span class="o">=</span>nginx<span class="w"> </span>--dry-run<span class="o">=</span>client<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span>&gt;<span class="w"> </span>myapp.yaml
+<a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a>nano<span class="w"> </span>myapp.yaml<span class="w">            </span><span class="c1"># 按需修改</span>
+<a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>myapp.yaml
+</code></pre></div>
+<blockquote>
+<p>用 <code>--dry-run=client -o yaml</code> 生成骨架是避免手写缩进错误的推荐做法；<code>kubectl apply</code> 是幂等的（可重复执行），<code>kubectl create</code> 重复执行会报已存在。</p>
+</blockquote>
+<p><strong>资源类型与字段查询</strong>（写 yaml 前先查）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>kubectl<span class="w"> </span>api-resources<span class="w">     </span><span class="c1"># 列出所有资源类型（含简称、API 版本）</span>
+<a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>kubectl<span class="w"> </span>explain<span class="w"> </span>pods<span class="w">      </span><span class="c1"># 查看某资源（如 Pod）的字段定义与含义</span>
+</code></pre></div>
+<p><code>kubectl api-resources</code> 输出示例（截取）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>NAME                              SHORTNAMES   APIVERSION       NAMESPACED   KIND
+<a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a>configmaps                        cm           v1               true         ConfigMap
+<a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a>deployments                       deploy       apps/v1          true         Deployment
+<a id="__codelineno-47-4" name="__codelineno-47-4" href="#__codelineno-47-4"></a>namespaces                        ns           v1               false        Namespace
+<a id="__codelineno-47-5" name="__codelineno-47-5" href="#__codelineno-47-5"></a>nodes                             no           v1               false        Node
+<a id="__codelineno-47-6" name="__codelineno-47-6" href="#__codelineno-47-6"></a>pods                              po           v1               true         Pod
+<a id="__codelineno-47-7" name="__codelineno-47-7" href="#__codelineno-47-7"></a>services                          svc          v1               true         Service
+</code></pre></div>
+<p><code>kubectl explain pods</code> 输出示例（截取）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>KIND:     Pod
+<a id="__codelineno-48-2" name="__codelineno-48-2" href="#__codelineno-48-2"></a>VERSION:  v1
+<a id="__codelineno-48-3" name="__codelineno-48-3" href="#__codelineno-48-3"></a>
+<a id="__codelineno-48-4" name="__codelineno-48-4" href="#__codelineno-48-4"></a>DESCRIPTION:
+<a id="__codelineno-48-5" name="__codelineno-48-5" href="#__codelineno-48-5"></a>     Pod is a collection of containers that can run on a host. This resource is
+<a id="__codelineno-48-6" name="__codelineno-48-6" href="#__codelineno-48-6"></a>     created by clients and scheduled onto hosts.
+<a id="__codelineno-48-7" name="__codelineno-48-7" href="#__codelineno-48-7"></a>
+<a id="__codelineno-48-8" name="__codelineno-48-8" href="#__codelineno-48-8"></a>FIELDS:
+<a id="__codelineno-48-9" name="__codelineno-48-9" href="#__codelineno-48-9"></a>   apiVersion   &lt;string&gt;
+<a id="__codelineno-48-10" name="__codelineno-48-10" href="#__codelineno-48-10"></a>   kind         &lt;string&gt;
+<a id="__codelineno-48-11" name="__codelineno-48-11" href="#__codelineno-48-11"></a>   metadata     &lt;Object&gt;
+<a id="__codelineno-48-12" name="__codelineno-48-12" href="#__codelineno-48-12"></a>   spec         &lt;Object&gt;
+</code></pre></div>
+<blockquote>
+<p>写 yaml 的完整流程：<code>api-resources</code> 确认资源类型和 API 版本 → <code>explain</code> 查看字段 → <code>--dry-run</code> 生成骨架 → 修改 → <code>apply</code>。<code>explain</code> 支持深层字段（如 <code>kubectl explain pods.spec.containers</code>）。</p>
+</blockquote>
+<h3 id="4_1">4. 标签与选择器<a class="headerlink" href="#4_1" title="Permanent link">&para;</a></h3>
+<p>标签（label）是挂在资源上的键值对，<strong>选择器（selector）</strong> 用它筛选/关联资源。这是后续所有章节（Deployment 管理 Pod、Service 选择后端等）的基础。</p>
+<p>为命名空间添加标签：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>kubectl<span class="w"> </span>label<span class="w"> </span>ns<span class="w"> </span>lab<span class="w"> </span><span class="nv">name</span><span class="o">=</span>lab
+</code></pre></div>
+<p>查看标签：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>ns<span class="w"> </span>--show-labels
+</code></pre></div>
+<p>修改标签（--overwrite）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>kubectl<span class="w"> </span>label<span class="w"> </span>ns<span class="w"> </span>lab<span class="w"> </span><span class="nv">name</span><span class="o">=</span>cka<span class="w"> </span>--overwrite
+</code></pre></div>
+<p>删除标签（标签名后加 <code>-</code>）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>kubectl<span class="w"> </span>label<span class="w"> </span>ns<span class="w"> </span>lab<span class="w"> </span>name-
+</code></pre></div>
+<p>按标签筛选（选择器）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pod<span class="w"> </span>-l<span class="w"> </span><span class="nv">app</span><span class="o">=</span>myapp<span class="w">          </span><span class="c1"># 筛选含 app=myapp 的 Pod</span>
+<a id="__codelineno-53-2" name="__codelineno-53-2" href="#__codelineno-53-2"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pod<span class="w"> </span>-l<span class="w"> </span><span class="s1">'app in (myapp,nginx)'</span><span class="w">   </span><span class="c1"># 多值匹配</span>
+</code></pre></div>
+<h3 id="5-pod">5. Pod 基本操作<a class="headerlink" href="#5-pod" title="Permanent link">&para;</a></h3>
+<p>创建 pod（命令式）</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>kubectl<span class="w"> </span>run<span class="w"> </span>katacoda<span class="w"> </span>--image<span class="o">=</span>katacoda/docker-http-server<span class="w"> </span>-n<span class="w"> </span>lab
+</code></pre></div>
+<p>查看新建的 pod</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>pod<span class="w"> </span>-n<span class="w"> </span>lab<span class="w"> </span>-o<span class="w"> </span>wide
+</code></pre></div>
+<p><strong>特别留意 pod 的 ip 地址，以及所在节点</strong></p>
+<p>使用 pod 的 ip 访问 pod</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a>curl<span class="w"> </span><span class="m">10</span>.244.29.132
+</code></pre></div>
+<p>查看 pod 详细信息</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a>kubectl<span class="w"> </span>describe<span class="w"> </span>pod<span class="w"> </span>katacoda<span class="w"> </span>-n<span class="w"> </span>lab
+</code></pre></div>
+<p>查看 pod 的日志</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a>kubectl<span class="w"> </span>logs<span class="w"> </span>katacoda<span class="w"> </span>-n<span class="w"> </span>lab
+</code></pre></div>
+<p>查看 pod 的 yaml 文件</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span>katacoda<span class="w"> </span>-n<span class="w"> </span>lab
+</code></pre></div>
+<p>编辑 pod（查看/修改配置）</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a><span class="nv">KUBE_EDITOR</span><span class="o">=</span><span class="s2">"nano"</span><span class="w"> </span>kubectl<span class="w"> </span>edit<span class="w"> </span>pod<span class="w"> </span>katacoda<span class="w"> </span>-n<span class="w"> </span>lab
+</code></pre></div>
+<h3 id="6">6. 清理<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<p>删除 pod</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a>kubectl<span class="w"> </span>delete<span class="w"> </span>pod<span class="w"> </span>katacoda<span class="w"> </span>-n<span class="w"> </span>lab
+</code></pre></div>
+<p>删除 ns</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a>kubectl<span class="w"> </span>delete<span class="w"> </span>ns<span class="w"> </span>lab
+</code></pre></div>
+<h2 id="_8">本章验收清单<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<p>完成本章后，逐项核对（全部 ✅ 才算达标）：</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>检查项</th>
+<th>验证命令</th>
+<th>达标标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>节点就绪</td>
+<td><code>kubectl get nodes</code></td>
+<td>3 个节点（node1/node2/node3）全部 <code>Ready</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>系统组件正常</td>
+<td><code>kubectl get pods -A</code></td>
+<td>kube-system 等系统 Pod 全部 <code>Running</code>（或 Completed）</td>
+</tr>
+<tr>
+<td>3</td>
+<td>CNI 网络可用</td>
+<td><code>kubectl get pods -n kube-system \| grep calico</code></td>
+<td>calico 相关 Pod <code>Running</code>，无 CrashLoopBackOff</td>
+</tr>
+<tr>
+<td>4</td>
+<td>镜像拉取链路通</td>
+<td><code>kubectl run test --image=busybox -- sleep 3600</code></td>
+<td>test Pod 快速 <code>Running</code>，<code>kubectl delete pod test</code> 能清理</td>
+</tr>
+<tr>
+<td>5</td>
+<td>跨节点调度</td>
+<td>查看第 4 项 Pod 的 NODE 列</td>
+<td>Pod 调度到 worker（node2/node3）而非 master</td>
+</tr>
+<tr>
+<td>6</td>
+<td>（延迟项）StorageClass</td>
+<td><code>kubectl get storageclass</code></td>
+<td><strong>本阶段为空属正常</strong>——按教学顺序在 实验 08 Lab 4 安装（此处不装）</td>
+</tr>
+<tr>
+<td>7</td>
+<td>kubectl 交互熟悉</td>
+<td>完成「Kubectl 基础与公共操作」小节的命令</td>
+<td>能独立完成查看/创建/描述/编辑/删除资源</td>
+</tr>
+<tr>
+<td>8</td>
+<td>网络连通性自查</td>
+<td>回顾前置检查记录</td>
+<td>了解本环境哪些海外域名可达、哪些走了加速/镜像源</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="f2026-08">附录F：2026-08 三节点实测记录（从空白机器到可用集群）<a class="headerlink" href="#f2026-08" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>本节记录一次<strong>真实的从零安装全过程</strong>（3 台国内云主机，Ubuntu 24.04.4 / 4核8G，从空白系统开始），包含每一步的<strong>实际输出、踩到的坑、根因与修复</strong>。目的：让后来者知道"手册为什么这么写"——每个预防步骤背后都有一个真实事故。<strong>按正文步骤执行即可，本节供遇到问题时对照。</strong></p>
+</blockquote>
+<h3 id="f1">F.1 环境与最终版本<a class="headerlink" href="#f1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>云厂商/规格</td>
+<td>国内云 3 台，4核 / 7.4GB / 40GB，同内网（192.168.0.x/24）</td>
+</tr>
+<tr>
+<td>操作系统</td>
+<td>Ubuntu 24.04.4 LTS（内核 6.8.0-106）</td>
+</tr>
+<tr>
+<td>最终版本</td>
+<td>kubelet/kubeadm/kubectl <strong>v1.36.3</strong>、containerd <strong>2.2.1</strong>、Calico v3.29.1、metrics-server v0.9.0（local-path 按教学顺序在 实验 08 Lab 4 安装）</td>
+</tr>
+<tr>
+<td>加速站</td>
+<td>docker.1panel.live（主）+ docker.m.daocloud.io（备）</td>
+</tr>
+<tr>
+<td>镜像仓库</td>
+<td>registry.aliyuncs.com/google_containers（registry.k8s.io 本环境不可达）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="f2">F.2 实测时间线与踩坑记录<a class="headerlink" href="#f2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>步骤</th>
+<th>现象</th>
+<th>根因</th>
+<th>修复（已固化进正文）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>前置检查</td>
+<td><code>docker.io</code> 直连超时；<code>registry.k8s.io</code> 可达（307）；<code>pkgs.k8s.io</code> 可达（302）；dl.k8s.io 返回 <code>v1.36.3</code></td>
+<td>国内网络对海外源连通性参差</td>
+<td>前置检查第3步：加速站预测试 + 版本探测，输出主站/备站/镜像仓库三选</td>
+</tr>
+<tr>
+<td>2</td>
+<td>步骤5 init</td>
+<td><strong>init 卡 <code>wait-control-plane</code></strong>，<code>journalctl -u kubelet</code> 报 <code>failed to get sandbox image "registry.k8s.io/pause:3.10.1"</code></td>
+<td>kubelet 创建 Pod 沙箱默认从 <code>registry.k8s.io</code> 拉 pause；<code>--image-repository</code> 只作用于控制面组件、<strong>不覆盖</strong> kubelet 的沙箱镜像；且 kubeadm 预热的 pause 是 3.10.2 而 kubelet 内置默认要 <strong>3.10.1</strong>（版本不一致）</td>
+<td>步骤5 ②：ctr 拉国内 pause + <strong>把常见版本（3.10/3.10.1/3.10.2）全部 tag</strong> 成 <code>registry.k8s.io/pause:*</code>，重启 kubelet 即可，<strong>不要急着 reset</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>init 失败后</td>
+<td><code>kubectl get nodes</code> 报 <strong><code>Forbidden</code>（User "kubernetes-admin" cannot list ...）</strong></td>
+<td>v1.36 起 kubeadm 把 admin 组从 <code>system:masters</code> 改为 <code>kubeadm:cluster-admins</code>（走 RBAC binding）；init 中断时该 binding 未创建</td>
+<td>用 <code>export KUBECONFIG=/etc/kubernetes/super-admin.conf</code>（system:masters 超级组）救急 + 补建 <code>kubeadm:cluster-admins</code> binding</td>
+</tr>
+<tr>
+<td>4</td>
+<td>步骤3 加速</td>
+<td>hosts.toml 配了但拉取仍直连 <code>registry-1.docker.io</code> 超时</td>
+<td><strong>TOML 双引号丢失</strong>导致配置解析失败、containerd 静默回退直连（自动化传输/复制时引号最易丢）</td>
+<td>步骤3 特别提示：引号不能丢 + <code>cat</code> 核对</td>
+</tr>
+<tr>
+<td>5</td>
+<td>步骤8 calico</td>
+<td><code>calico-node</code> 全部 <code>ImagePullBackOff</code></td>
+<td>calico 三件套（cni/node/kube-controllers）在 docker.io，加速站对<strong>部分镜像 403</strong>：实测 <code>docker.1panel.live</code> 对 <code>calico/cni</code> 返回 <strong>403</strong>，对 node/controllers 正常</td>
+<td>步骤8：3 台节点<strong>先预拉 + 多站 fallback 链</strong>（1panel 失败自动换 daocloud/jiaxin），tag 成本地镜像</td>
+</tr>
+<tr>
+<td>6</td>
+<td>步骤10 冒烟</td>
+<td>busybox 秒拉、跨节点调度成功</td>
+<td>—</td>
+<td>验证通过（见 F.3）</td>
+</tr>
+<tr>
+<td>7</td>
+<td>实验 09 metrics-server</td>
+<td><code>kubectl top node</code> 报 <code>Metrics API not available</code>，pod 日志报 kubelet 证书校验失败</td>
+<td>官方 components.yaml 的 <code>--secure-port</code> 参数实际是 <strong>10250</strong>（非早期版本的 4443），按旧版 sed 定位加 <code>--kubelet-insecure-tls</code> 会加不上</td>
+<td>实验 05 Lab 1 用 <code>kubectl patch</code> 或按实际参数定位追加 <code>--kubelet-insecure-tls</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>worker 重装</td>
+<td>node3 完全重置（reset + 清镜像）后按附录 D 脚本重装</td>
+<td>—</td>
+<td><strong>端到端验证通过</strong>：脚本可用、pause 预防生效（join 后无 sandbox 报错）、fallback 链实测复现（cni 走 daocloud）、node3 重新 Ready</td>
+</tr>
+<tr>
+<td>9</td>
+<td>自动化环境</td>
+<td>附录 D 脚本在无 TTY 下 <code>gpg</code> 报 <code>cannot open '/dev/tty'</code></td>
+<td>gpg 需要 TTY；自动化/脚本环境没有</td>
+<td>gpg 加 <strong><code>--batch</code></strong>（正文步骤4 + 附录D 已同步）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="f3-02-09-lab">F.3 冒烟测试结果（实验 02-09核心 Lab）<a class="headerlink" href="#f3-02-09-lab" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>验证项</th>
+<th>命令</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deployment 扩缩容</td>
+<td><code>kubectl create deployment nginx --replicas=3</code> + <code>scale 5</code></td>
+<td>✅ 3→5 副本</td>
+</tr>
+<tr>
+<td>Service 访问</td>
+<td><code>kubectl expose deployment nginx --port=80</code> + 集群内 curl ClusterIP</td>
+<td>✅ 返回 nginx 页面</td>
+</tr>
+<tr>
+<td>PVC 动态卷</td>
+<td>PVC(1Gi) → local-path 自动 PV → Pod 写文件</td>
+<td>✅ Bound + 数据写入</td>
+</tr>
+<tr>
+<td>ConfigMap</td>
+<td>create configmap + 挂载读取</td>
+<td>✅ user= bob</td>
+</tr>
+<tr>
+<td>SA + RBAC</td>
+<td>create sa + create token + rolebinding</td>
+<td>✅ eyJ token + view 角色</td>
+</tr>
+<tr>
+<td>metrics-server</td>
+<td>部署 + <code>kubectl top node</code></td>
+<td>✅ 三节点 CPU/内存数据</td>
+</tr>
+<tr>
+<td>HPA</td>
+<td><code>kubectl autoscale --cpu=50%</code>（旧语法 <code>--cpu-percent=50</code> 已弃用）</td>
+<td>✅ <code>cpu: 0%/50%</code> 有真实指标</td>
+</tr>
+</tbody>
+</table>
+<h3 id="f4">F.4 结论<a class="headerlink" href="#f4" title="Permanent link">&para;</a></h3>
+<p><strong>正文 + 附录 A-E 在实测环境下按步骤执行可一次成功</strong>（本记录中的坑均已在前置检查/步骤/故障清单中固化为预防或处理手段）。<strong>两个最关键的预防动作</strong>：① init 前注入 pause 沙箱镜像（坑 #2）；② calico 预拉用多站 fallback（坑 #5）。新环境部署请务必先做<strong>前置检查第 3 步</strong>（加速站 + 版本预测试），不要跳过。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 · CC BY-NC-ND 4.0 · Kubernetes 容器云原生实战课程
+    </div>
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "navigation.expand", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@11/dist/mermaid.min.js"></script>
+      
+    
+  </body>
+</html>

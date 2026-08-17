@@ -1,0 +1,3381 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="教材（19 章）+ 实验手册（14 实验 93 Lab）+ 课件，基于 K8s v1.36 真实集群实测，对接 CKA 认证">
+      
+      
+      
+        <link rel="canonical" href="https://www.cloudzun.com/k8s-course/textbook/ch05-workload-controllers/">
+      
+      
+        <link rel="prev" href="../ch04-pod-and-containers/">
+      
+      
+        <link rel="next" href="../ch06-scheduling-and-pod-placement/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>第 5 章 工作负载控制器 - Kubernetes 容器云原生实战课程</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#5" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="Kubernetes 容器云原生实战课程" class="md-header__button md-logo" aria-label="Kubernetes 容器云原生实战课程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Kubernetes 容器云原生实战课程
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第 5 章 工作负载控制器
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="切换深色模式"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换深色模式" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-label="切换浅色模式"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换浅色模式" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/cloudzun/k8s-course" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cloudzun/k8s-course
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Kubernetes 容器云原生实战课程" class="md-nav__button md-logo" aria-label="Kubernetes 容器云原生实战课程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Kubernetes 容器云原生实战课程
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/cloudzun/k8s-course" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cloudzun/k8s-course
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E8%AF%BE%E7%A8%8B%E5%A4%A7%E7%BA%B2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课程大纲
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    教材
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    教材
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch01-containers-and-cloud-native/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 1 章 容器与云原生基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch02-kubernetes-overview-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 2 章 Kubernetes 概述与架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch03-cluster-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 3 章 集群安装与配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch04-pod-and-containers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 4 章 Pod 与容器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 5 章 工作负载控制器
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 5 章 工作负载控制器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        学习目标
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#51-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 控制器：管理 Pod 的"管理者"
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.1 控制器：管理 Pod 的&#34;管理者&#34;">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#511" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1.1 为什么需要控制器
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#512" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1.2 控制器的共同骨架
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#513" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1.3 控制器选择决策树（先选对类型）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#52-deployment-replicaset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Deployment 与 ReplicaSet：无状态应用的标准答案
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.2 Deployment 与 ReplicaSet：无状态应用的标准答案">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#521" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2.1 三层结构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#522" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2.2 副本管理与自愈
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#523" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2.3 滚动更新：发布不中断的节奏控制
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#524" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2.4 回滚：出问题一键还原
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#525" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2.5 扩缩容与暂停
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#526" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2.6 设计指南：生产发布策略
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#53-statefulset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 StatefulSet：有状态应用的正确打开方式
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.3 StatefulSet：有状态应用的正确打开方式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#531" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3.1 有状态应用的三个难题
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#532-web-0web-1web-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3.2 稳定网络标识：web-0、web-1、web-2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#533-pvc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3.3 稳定存储：每个副本绑定自己的 PVC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#534" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3.4 有序部署/缩容/更新
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#535-statefulset-vs-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3.5 StatefulSet vs Deployment（选型对照）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#54-daemonset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 DaemonSet：每节点一个
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.4 DaemonSet：每节点一个">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#541" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4.1 机制
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#542" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4.2 典型场景
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#543-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4.3 与 Deployment 的本质区别
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#55-job-cronjob" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Job 与 CronJob：任务型工作负载
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.5 Job 与 CronJob：任务型工作负载">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#551-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5.1 Job：一次性任务
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#552-cronjob-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5.2 CronJob：定时触发 Job
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#553-vs-restartpolicy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5.3 任务型 vs 服务型（restartPolicy 的关键差异）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#56" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6 控制器选择总决策树（走查实例）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#57" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.7 实验演练指引
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        本章小结
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        思考题
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch06-scheduling-and-pod-placement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 6 章 调度与 Pod 放置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch07-autoscaling-and-resource-governance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 7 章 自动扩缩与资源治理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch08-configuration-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 8 章 配置管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch09-services-load-balancing-networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 9 章 服务、负载均衡与网络
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch10-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 10 章 存储
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch11-authentication-and-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 11 章 认证与授权
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch12-admission-and-container-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 12 章 准入与容器安全
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch13-cluster-security-hardening/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 13 章 集群安全加固
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch14-cluster-maintenance-and-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 14 章 集群维护与运维
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch15-observability-monitoring-logging-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 15 章 可观测性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch16-troubleshooting-and-reliability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 16 章 故障排查与可靠性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch17-helm-and-kustomize/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 17 章 Helm 与 Kustomize
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch18-comprehensive-practical-wordpress/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 18 章 综合实战
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch19-cka-exam-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 19 章 CKA 考试指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COURSE-OUTLINE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    教材↔实验映射
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    术语表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E6%80%9D%E8%80%83%E9%A2%98%E5%8F%82%E8%80%83%E7%AD%94%E6%A1%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    思考题参考答案
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验手册
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    实验手册
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/01-cluster-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 01 集群安装
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/02-pod/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 02 Pod
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/03-workload-scheduling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 03 工作负载调度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/04-resource-scheduling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 04 资源调度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/05-performance-and-monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 05 性能与监控
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/06-configmap-and-secret/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 06 配置管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/07-network-and-service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 07 网络与服务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/08-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 08 存储
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/09-authentication-and-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 09 认证与授权
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/10-troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 10 故障排查
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/11-wordpress-app/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 11 WordPress 综合演练
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/12-cluster-maintenance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 12 集群维护
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/13-helm-delivery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 13 Helm 交付
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/14-observability-optional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验 14 可观测性（可选）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/00-%E5%AE%9E%E9%AA%8C%E9%95%9C%E5%83%8F%E6%B8%85%E5%8D%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实验镜像清单
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课件（网页版）
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    课件（网页版）
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 1 章 容器与云原生基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 2 章 Kubernetes 概述与架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 3 章 集群安装与配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 4 章 Pod 与容器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 5 章 工作负载控制器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 6 章 调度与 Pod 放置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 7 章 自动扩缩与资源治理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 8 章 配置管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 9 章 服务、负载均衡与网络
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 10 章 存储
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 11 章 认证与授权
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 12 章 准入与容器安全
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 13 章 集群安全加固
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 14 章 集群维护与运维
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch15/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 15 章 可观测性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch16/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 16 章 故障排查与可靠性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch17/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 17 章 Helm 与 Kustomize
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch18/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 18 章 综合实战
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../slides/ch19/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 19 章 CKA 考试指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        学习目标
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#51-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 控制器：管理 Pod 的"管理者"
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.1 控制器：管理 Pod 的&#34;管理者&#34;">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#511" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1.1 为什么需要控制器
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#512" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1.2 控制器的共同骨架
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#513" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1.3 控制器选择决策树（先选对类型）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#52-deployment-replicaset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Deployment 与 ReplicaSet：无状态应用的标准答案
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.2 Deployment 与 ReplicaSet：无状态应用的标准答案">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#521" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2.1 三层结构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#522" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2.2 副本管理与自愈
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#523" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2.3 滚动更新：发布不中断的节奏控制
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#524" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2.4 回滚：出问题一键还原
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#525" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2.5 扩缩容与暂停
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#526" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2.6 设计指南：生产发布策略
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#53-statefulset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 StatefulSet：有状态应用的正确打开方式
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.3 StatefulSet：有状态应用的正确打开方式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#531" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3.1 有状态应用的三个难题
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#532-web-0web-1web-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3.2 稳定网络标识：web-0、web-1、web-2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#533-pvc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3.3 稳定存储：每个副本绑定自己的 PVC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#534" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3.4 有序部署/缩容/更新
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#535-statefulset-vs-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3.5 StatefulSet vs Deployment（选型对照）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#54-daemonset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 DaemonSet：每节点一个
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.4 DaemonSet：每节点一个">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#541" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4.1 机制
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#542" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4.2 典型场景
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#543-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4.3 与 Deployment 的本质区别
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#55-job-cronjob" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Job 与 CronJob：任务型工作负载
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.5 Job 与 CronJob：任务型工作负载">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#551-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5.1 Job：一次性任务
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#552-cronjob-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5.2 CronJob：定时触发 Job
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#553-vs-restartpolicy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5.3 任务型 vs 服务型（restartPolicy 的关键差异）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#56" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6 控制器选择总决策树（走查实例）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#57" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.7 实验演练指引
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        本章小结
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        思考题
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="5">第 5 章 工作负载控制器<a class="headerlink" href="#5" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>配套实验手册：《Kubernetes 实验手册》（manual/ 目录）<strong>实验 03「工作负载」</strong>（6 个 Lab：Deployment 维护/滚动更新/StatefulSet/Job/CronJob/DaemonSet）。本章讲各类控制器的<strong>原理、机制与选型</strong>——"如何管理 Pod"是工作负载的核心问题，也是第 4 章 Pod 知识的自然延伸。</p>
+</blockquote>
+<h2 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>学完本章，你应该能够：</p>
+<ol>
+<li>解释"为什么需要控制器"（裸 Pod 的三个致命问题），说出控制器的共同骨架</li>
+<li>解释 Deployment 的三层结构（Deployment → ReplicaSet → Pod）与职责分层</li>
+<li>详细描述滚动更新的机制（maxUnavailable/maxSurge 如何控制节奏）与回滚原理</li>
+<li>解释 StatefulSet 如何解决有状态应用的三个难题（稳定标识/稳定存储/有序性）</li>
+<li>解释 DaemonSet 的机制与典型场景，说出它与 Deployment 的本质区别</li>
+<li>解释 Job 与 CronJob 的机制（成功语义、backoffLimit、并发策略）</li>
+<li>根据应用类型（无状态/有状态/守护/任务）做出控制器选型决策</li>
+<li>知道扩缩容与暂停机制背后的原理（修改期望状态）</li>
+</ol>
+<hr />
+<h2 id="51-pod">5.1 控制器：管理 Pod 的"管理者"<a class="headerlink" href="#51-pod" title="Permanent link">&para;</a></h2>
+<h3 id="511">5.1.1 为什么需要控制器<a class="headerlink" href="#511" title="Permanent link">&para;</a></h3>
+<p>第 4 章讲过裸 Pod（直接创建的 Pod）——但生产上<strong>几乎从不直接创建裸 Pod</strong>，因为它有三个致命问题：</p>
+<ol>
+<li><strong>不会自愈</strong>：Pod 崩溃/被删，不会自动重建（第 2 章 Killercoda 演练 4 已验证）</li>
+<li><strong>不会扩缩</strong>：流量大了要手动一个个创建，流量降了要手动删</li>
+<li><strong>没有更新能力</strong>：镜像升级只能删了重建，无法滚动</li>
+</ol>
+<p><strong>控制器（Controller）就是"管 Pod 的人"</strong>：你声明"要什么样的 Pod、要几个"，控制器负责创建、维持、更新、扩缩。第 2 章的控制循环在这里具体化为：<strong>控制器持续把"当前副本数"调和到"期望副本数"</strong>。</p>
+<h3 id="512">5.1.2 控制器的共同骨架<a class="headerlink" href="#512" title="Permanent link">&para;</a></h3>
+<p>所有工作负载控制器（Deployment/StatefulSet/DaemonSet/Job/CronJob）都有四个共同要素：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>① selector（选择器）：这个控制器管哪些 Pod（按标签匹配）
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>② template（Pod 模板）：要创建的 Pod 长什么样（镜像/端口/探针/卷）
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>③ replicas（副本数，部分控制器无）：期望多少个（Deployment/StatefulSet 有，DaemonSet/Job 没有）
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>④ 控制循环：持续观察 → 对比期望 → 调和（第 2 章 §2.3）
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>用户声明（期望状态）
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>   │ selector 匹配
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>   ▼
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>控制器观察当前 Pod 数量
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>   │ 数量 &lt; 期望？
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>   ├─ 是 → 按 template 创建 Pod（调度 → kubelet 运行）
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>   └─ 否 → 删除多余（或等待）
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>   ▼
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>再次观察（循环不止）
+</code></pre></div>
+<blockquote>
+<p><strong>核心认知</strong>：控制器不直接运行容器——它只<strong>创建/删除 Pod 对象</strong>，真正跑容器的是 kubelet（第 2 章职责分层）。你看到"Pod 删了又回来"，就是某个控制器在调和。</p>
+</blockquote>
+<h3 id="513">5.1.3 控制器选择决策树（先选对类型）<a class="headerlink" href="#513" title="Permanent link">&para;</a></h3>
+<p>面对一个应用，先回答四个问题：</p>
+<!-- 原 ASCII 图已转为 Mermaid -->
+<pre class="mermaid"><code>flowchart TD
+    Q1{"应用需要\n固定身份？"}
+    Q1 -- "是" --&gt; SS["StatefulSet\n（数据库等）"]
+    Q1 -- "否" --&gt; Q2{"每个节点\n都要跑？"}
+    Q2 -- "是" --&gt; DS["DaemonSet\n（CNI/监控/日志）"]
+    Q2 -- "否" --&gt; Q3{"一次性\n任务？"}
+    Q3 -- "是" --&gt; Q4{"需要定时？"}
+    Q3 -- "否" --&gt; DEP["Deployment\n（最常用）"]
+    Q4 -- "是" --&gt; CJ["CronJob"]
+    Q4 -- "否" --&gt; JOB["Job"]
+
+    style SS fill:#E8F4FD,stroke:#4A90D9
+    style DS fill:#E8F4FD,stroke:#4A90D9
+    style DEP fill:#E8F8E8,stroke:#5BA85B
+    style JOB fill:#FFF3E0,stroke:#E08A3C
+    style CJ fill:#FFF3E0,stroke:#E08A3C</code></pre>
+<blockquote>
+<p>读图要点：<strong>判断顺序是先问"身份"再问"分布"再问"任务"</strong>——有身份 → StatefulSet；每节点 → DaemonSet；一次性 → Job/CronJob；其余全部落 Deployment。</p>
+<p><strong>决策逻辑</strong>：默认 Deployment；应用有"身份"（名字/存储要固定）→ StatefulSet；按节点分布 → DaemonSet；跑完即走 → Job/CronJob。<strong>选错类型是工作负载最常见的错误</strong>——把有状态应用当 Deployment 跑，数据就悬了。</p>
+</blockquote>
+<hr />
+<h2 id="52-deployment-replicaset">5.2 Deployment 与 ReplicaSet：无状态应用的标准答案<a class="headerlink" href="#52-deployment-replicaset" title="Permanent link">&para;</a></h2>
+<h3 id="521">5.2.1 三层结构<a class="headerlink" href="#521" title="Permanent link">&para;</a></h3>
+<p>Deployment 不是直接管 Pod 的，它下面还有一层 ReplicaSet：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Deployment（描述：期望 3 副本、镜像版本、更新策略）
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    │ 管理（每次更新生成新的 RS）
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    ▼
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>ReplicaSet-1（当前版本的"副本管家"：维持 3 个 Pod）
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    │ 创建/删除
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    ▼
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>Pod × 3（真正跑应用的）
+</code></pre></div>
+<p><strong>为什么中间要隔一层 ReplicaSet</strong>：为了<strong>回滚</strong>（§5.2.4）——每次更新都生成一个新的 ReplicaSet，旧 RS 保留（带旧版本镜像的"历史记录"），回滚 = 把流量切回旧 RS。</p>
+<h3 id="522">5.2.2 副本管理与自愈<a class="headerlink" href="#522" title="Permanent link">&para;</a></h3>
+<p><code>replicas: 3</code> 就是"期望副本数"，ReplicaSet 控制器负责维持：</p>
+<ul>
+<li>某 Pod 崩溃 → RS 创建新 Pod（自愈）</li>
+<li>某节点挂了 → 该节点上 Pod 消失 → RS 在其他节点补建（节点级自愈）</li>
+<li><code>kubectl scale</code> → 只是<strong>修改期望值</strong>（3→5），RS 自动补建 2 个（第 2 章 §2.3.4 走查过）</li>
+</ul>
+<h3 id="523">5.2.3 滚动更新：发布不中断的节奏控制<a class="headerlink" href="#523" title="Permanent link">&para;</a></h3>
+<p><strong>问题</strong>：镜像升级（如 1.27 → 1.28）时，如果一次性全删全建，服务会中断。</p>
+<p><strong>滚动更新（RollingUpdate）</strong>：<strong>分批替换</strong>——新版本 Pod 先起来、就绪后，再停旧版本 Pod，循环直到全部替换。</p>
+<p>节奏由两个参数控制：</p>
+<ul>
+<li><strong>maxUnavailable</strong>：更新过程中<strong>最多允许多少个副本不可用</strong>（默认 25%）</li>
+<li><strong>maxSurge</strong>：更新过程中<strong>最多允许超出期望多少个副本</strong>（默认 25%）</li>
+</ul>
+<!-- 原 ASCII 图已转为 Mermaid -->
+<pre class="mermaid"><code>flowchart LR
+    s1["阶段1\n[旧][旧][旧]"] --&gt; s2["阶段2\n[新][旧][旧][旧]"]
+    s2 --&gt; s3["阶段3\n[新][旧][旧]"]
+    s3 --&gt; s4["阶段4\n[新][新][旧][旧]"]
+    s4 --&gt; s5["阶段5\n[新][新][旧]"]
+    s5 --&gt; s6["阶段6\n[新][新][新]"]
+
+    style s1 fill:#E8F8E8,stroke:#5BA85B
+    style s2 fill:#FFF3E0,stroke:#E08A3C
+    style s3 fill:#FFF3E0,stroke:#E08A3C
+    style s4 fill:#FFF3E0,stroke:#E08A3C
+    style s5 fill:#FFF3E0,stroke:#E08A3C
+    style s6 fill:#E8F8E8,stroke:#5BA85B</code></pre>
+<blockquote>
+<p>读图要点（示例：3 副本，maxUnavailable=1，maxSurge=1）：<strong>"新起一个 → 就绪 → 停一个旧的"循环交替</strong>（阶段 2 到阶段 5），任何时刻 ≥2 个可用且不超 4 个——橙色阶段是新旧并存期。</p>
+</blockquote>
+<p><strong>关键依赖</strong>：新 Pod 必须配 <strong>readinessProbe</strong>（实验 02 Lab 8）——滚动更新靠它判断"新 Pod 就绪了没"：<strong>就绪才停旧的</strong>。没有 readinessProbe，新 Pod 一启动就被认为可用，更新可能在应用未就绪时切换流量。</p>
+<blockquote>
+<p><strong>生产调优</strong>：核心服务用 <code>maxUnavailable: 0</code>（任何时刻都不能少服务）+ <code>maxSurge: 1</code>（一次多起一个）——<strong>零中断发布</strong>（实验 10 Lab 5 演练）。</p>
+</blockquote>
+<h3 id="524">5.2.4 回滚：出问题一键还原<a class="headerlink" href="#524" title="Permanent link">&para;</a></h3>
+<p><strong>机制</strong>：每次更新（模板变化）→ Deployment 生成<strong>新的 ReplicaSet</strong>（revision 递增，如 revision 2），旧 RS（revision 1）保留但缩到 0 副本。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>kubectl<span class="w"> </span><span class="nb">set</span><span class="w"> </span>image<span class="w"> </span>deployment/web<span class="w"> </span><span class="nv">nginx</span><span class="o">=</span>nginx:1.28<span class="w">   </span><span class="c1"># 更新 → revision 2（新 RS）</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>kubectl<span class="w"> </span>rollout<span class="w"> </span>status<span class="w"> </span>deployment/web<span class="w">         </span><span class="c1"># 等更新完成</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>kubectl<span class="w"> </span>rollout<span class="w"> </span><span class="nb">history</span><span class="w"> </span>deployment/web<span class="w">        </span><span class="c1"># 看历史：REVISION 1（1.27）/ 2（1.28）</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>kubectl<span class="w"> </span>rollout<span class="w"> </span>undo<span class="w"> </span>deployment/web<span class="w">           </span><span class="c1"># 回滚到上一个 revision</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>kubectl<span class="w"> </span>rollout<span class="w"> </span>undo<span class="w"> </span>deployment/web<span class="w"> </span>--to-revision<span class="o">=</span><span class="m">1</span><span class="w">   </span><span class="c1"># 回滚到指定版本</span>
+</code></pre></div>
+<p><strong>为什么能回滚</strong>：旧 RS 的 Pod 模板还在（历史快照）——回滚 = 把期望状态改回旧模板，滚动更新反向执行。</p>
+<blockquote>
+<p><strong>排障关联</strong>：更新后 CrashLoopBackOff（实验 10 Lab 2）→ 第一反应是 <code>rollout undo</code> 快速恢复，再慢慢查原因——<strong>先恢复业务，再排查问题</strong>。</p>
+</blockquote>
+<h3 id="525">5.2.5 扩缩容与暂停<a class="headerlink" href="#525" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>扩缩容</strong>：<code>kubectl scale deployment/web --replicas=5</code>——改期望值，RS 自动补齐/缩减（第 7 章 HPA 就是自动执行这一步）</li>
+<li><strong>暂停/恢复</strong>：<code>kubectl rollout pause deployment/web</code>——暂停后<strong>多次修改模板不会触发更新</strong>（合并修改后 <code>kubectl rollout pause deployment/web</code> 一次性生效）——批量修改时避免每次改动都滚动一次</li>
+</ul>
+<h3 id="526">5.2.6 设计指南：生产发布策略<a class="headerlink" href="#526" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>滚动更新是 Deployment 的内置策略；但<strong>高风险变更</strong>（数据库连接串变更、重大重构）需要更谨慎的发布方式。</p>
+</blockquote>
+<p><strong>发布策略选型矩阵</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>原理</th>
+<th>回滚速度</th>
+<th>资源开销</th>
+<th>适用场景</th>
+<th>K8s 实现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>滚动更新</strong></td>
+<td>逐批替换（§5.2.3）</td>
+<td>中</td>
+<td>低（+1 Pod）</td>
+<td>大多数无状态服务</td>
+<td>Deployment 原生</td>
+</tr>
+<tr>
+<td><strong>蓝绿部署</strong></td>
+<td>新旧两套环境，切换 Service 指向</td>
+<td><strong>极快</strong>（切 selector）</td>
+<td>高（2x 资源）</td>
+<td>需要瞬间切换/瞬间回滚</td>
+<td>两个 Deployment + Service selector 切换</td>
+</tr>
+<tr>
+<td><strong>金丝雀发布</strong></td>
+<td>小比例流量验证后逐步放大</td>
+<td>快</td>
+<td>中</td>
+<td>高风险变更</td>
+<td>两个 Deployment + Ingress 权重 / Argo Rollouts</td>
+</tr>
+<tr>
+<td><strong>A/B 测试</strong></td>
+<td>按用户特征分流</td>
+<td>快</td>
+<td>中</td>
+<td>功能验证</td>
+<td>Ingress Header 路由 / Service Mesh</td>
+</tr>
+</tbody>
+</table>
+<p><strong>变更管理规范</strong>（生产基线）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>变更窗口：常规变更工作日 10:00-16:00；高风险变更周二/周三 10:00-14:00
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>         禁止：周五下午、节假日前一天、大促期间
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>标准流程：变更申请 → 同行评审 → 预发验证 → 灰度（≤10% 流量）→ 观察（≥15 分钟）→ 全量 → 验证
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>回滚决策：错误率 &gt; 基线 2 倍 → 立即回滚；P99 延迟 &gt; 基线 3 倍 → 立即回滚；任何数据异常 → 回滚并暂停
+</code></pre></div>
+<blockquote>
+<p>决策逻辑：<strong>默认滚动更新（成本最低）</strong>；要"瞬间切换/回滚" → 蓝绿；高风险变更要"小流量验证" → 金丝雀；功能对比 → A/B。<strong>发布策略的核心是"可回滚 + 可控观察"</strong>——第 16 章"先恢复再排查"的纪律在发布侧就是"随时能回滚"。</p>
+</blockquote>
+<hr />
+<h2 id="53-statefulset">5.3 StatefulSet：有状态应用的正确打开方式<a class="headerlink" href="#53-statefulset" title="Permanent link">&para;</a></h2>
+<h3 id="531">5.3.1 有状态应用的三个难题<a class="headerlink" href="#531" title="Permanent link">&para;</a></h3>
+<p>数据库、消息队列这类应用与无状态 Web 不同：</p>
+<ol>
+<li><strong>身份要稳定</strong>：副本 <code>web-0</code> 永远是 <code>web-0</code>（集群里其他组件认它的名字）</li>
+<li><strong>存储要固定</strong>：每个副本的数据必须绑在自己的卷上（删了重建数据不能丢、不能串）</li>
+<li><strong>启动要有序</strong>：主从架构里，主库先起、从库后起（副本 0 先于副本 1）</li>
+</ol>
+<p>Deployment 给不了这些（Pod 名随机、卷不绑定、无顺序）。<strong>StatefulSet 就是为此设计的</strong>。</p>
+<h3 id="532-web-0web-1web-2">5.3.2 稳定网络标识：web-0、web-1、web-2<a class="headerlink" href="#532-web-0web-1web-2" title="Permanent link">&para;</a></h3>
+<p>StatefulSet 的每个 Pod 有<strong>稳定且有序</strong>的名字：<code>&lt;sts名&gt;-&lt;序号&gt;</code>（web-0、web-1、web-2）：</p>
+<ul>
+<li>名字<strong>从 0 开始编号，永不改变</strong>（Pod 删了重建，还是叫 web-1）</li>
+<li>配合 <strong>headless Service</strong>（实验 07 Lab 4），每个 Pod 有<strong>稳定的 DNS 名</strong>：<code>web-0.web-svc.namespace.svc</code>——集群内其他应用用这个固定名字找它（如从库连主库：<code>web-0.web-svc.namespace.svc</code>）</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>StatefulSet: web（replicas=3）
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>   ├─ web-0  ←→ 稳定 DNS: web-0.web-svc.default.svc
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>   ├─ web-1  ←→ web-1.web-svc.default.svc
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>   └─ web-2  ←→ web-2.web-svc.default.svc
+</code></pre></div>
+<h3 id="533-pvc">5.3.3 稳定存储：每个副本绑定自己的 PVC<a class="headerlink" href="#533-pvc" title="Permanent link">&para;</a></h3>
+<p>StatefulSet 通过 <strong>volumeClaimTemplates（卷声明模板）</strong> 给每个副本自动创建独立的 PVC：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>web-0 → PVC web-data-web-0（数据落在自己的卷）
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>web-1 → PVC web-data-web-1（与 web-0 的卷完全独立）
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>web-2 → PVC web-data-web-2
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>Pod 删了重建 → 还绑同一个 PVC（数据不丢）
+</code></pre></div>
+<blockquote>
+<p>与 Deployment 的本质区别：Deployment 的所有副本<strong>共享同一个卷</strong>（或各自临时卷），StatefulSet 的每个副本<strong>有自己专属的卷</strong>——这就是"身份与数据绑定"。</p>
+</blockquote>
+<h3 id="534">5.3.4 有序部署/缩容/更新<a class="headerlink" href="#534" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>部署有序</strong>：web-0 先创建且 Running 后，才创建 web-1，再 web-2（<code>kubectl rollout status</code> 能看到依次就绪）</li>
+<li><strong>缩容有序</strong>：从大到小删除（先 web-2、再 web-1、最后 web-0）</li>
+<li><strong>更新有序</strong>：逆序逐个更新（web-2 → web-1 → web-0），保证主节点（web-0）最后更新</li>
+</ul>
+<blockquote>
+<p><strong>并发策略 <code>podManagementPolicy</code></strong>：默认 <code>podManagementPolicy</code>（严格有序）。<strong>不需要启动顺序的应用</strong>（如无主从关系的缓存集群）可以设 <code>podManagementPolicy</code>——<strong>所有副本并行创建/删除，大幅提升扩缩容速度</strong>（10 副本有序可能要几分钟，并行秒级）。判断标准：<strong>副本间有无"谁先谁后"的依赖</strong>——有则 OrderedReady，无则 Parallel。</p>
+</blockquote>
+<h3 id="535-statefulset-vs-deployment">5.3.5 StatefulSet vs Deployment（选型对照）<a class="headerlink" href="#535-statefulset-vs-deployment" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Deployment</th>
+<th>StatefulSet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pod 名称</td>
+<td>随机后缀（web-abc12）</td>
+<td><strong>稳定有序</strong>（web-0/1/2）</td>
+</tr>
+<tr>
+<td>存储</td>
+<td>副本共享/无绑定</td>
+<td><strong>每副本独立 PVC（volumeClaimTemplates）</strong></td>
+</tr>
+<tr>
+<td>顺序</td>
+<td>无</td>
+<td><strong>创建/删除/更新都有序</strong></td>
+</tr>
+<tr>
+<td>网络标识</td>
+<td>仅 Service</td>
+<td><strong>headless + 稳定 DNS 名</strong></td>
+</tr>
+<tr>
+<td>适用</td>
+<td>无状态（Web/API）</td>
+<td>有状态（数据库/消息队列/协调器）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>决策逻辑</strong>：应用需要"被点名"（固定名字/固定存储）→ StatefulSet；应用无身份需求 → Deployment（更简单）。<strong>判断标准：删掉这个 Pod，它的"身份/数据"需不需要保留？</strong></p>
+</blockquote>
+<hr />
+<h2 id="54-daemonset">5.4 DaemonSet：每节点一个<a class="headerlink" href="#54-daemonset" title="Permanent link">&para;</a></h2>
+<h3 id="541">5.4.1 机制<a class="headerlink" href="#541" title="Permanent link">&para;</a></h3>
+<p><strong>DaemonSet 保证每个节点上恰好运行一个该应用的 Pod</strong>——不是按副本数分布，而是<strong>按节点分布</strong>：</p>
+<ul>
+<li>新节点加入集群 → DaemonSet 自动在新节点创建 Pod</li>
+<li>节点删除 → 对应 Pod 一并消失</li>
+<li>有节点被标记不可调度（cordon，实验 12 Lab 3）→ 该节点上不创建</li>
+</ul>
+<h3 id="542">5.4.2 典型场景<a class="headerlink" href="#542" title="Permanent link">&para;</a></h3>
+<p>DaemonSet 都是"节点级服务"：</p>
+<ul>
+<li><strong>网络插件</strong>：calico-node（每节点一个，管该节点 Pod 网络，实验 01 装过）</li>
+<li><strong>监控采集</strong>：node-exporter（每节点采集主机指标）、metrics-server 的指标来源</li>
+<li><strong>日志采集</strong>：filebeat/fluentd（每节点一个，收集该节点所有容器日志）</li>
+<li><strong>存储挂载</strong>：部分 CSI 节点组件</li>
+</ul>
+<h3 id="543-deployment">5.4.3 与 Deployment 的本质区别<a class="headerlink" href="#543-deployment" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Deployment</th>
+<th>DaemonSet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>分布逻辑</td>
+<td>按副本数，调度器选节点</td>
+<td><strong>按节点，每节点恰好一个</strong></td>
+</tr>
+<tr>
+<td>新增节点</td>
+<td>可能不上新节点</td>
+<td><strong>自动补上</strong></td>
+</tr>
+<tr>
+<td>副本数</td>
+<td><code>replicas</code> 指定</td>
+<td>无需指定（= 节点数）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>注意</strong>：默认情况下 DaemonSet 只在<strong>工作节点</strong>运行——控制面节点有污点（第 6 章调度时展开）。要让 DaemonSet 也跑上控制面，需要容忍那个污点（实验 04 Lab 7 演练过）。</p>
+</blockquote>
+<hr />
+<h2 id="55-job-cronjob">5.5 Job 与 CronJob：任务型工作负载<a class="headerlink" href="#55-job-cronjob" title="Permanent link">&para;</a></h2>
+<h3 id="551-job">5.5.1 Job：一次性任务<a class="headerlink" href="#551-job" title="Permanent link">&para;</a></h3>
+<p><strong>Job 保证"一个任务成功完成"</strong>——与 Deployment（长期运行）完全不同的语义：</p>
+<ul>
+<li><strong>成功 = 完成</strong>：Pod 正常退出（exit 0）→ Job 标记 <code>Completed</code>（任务完成，不再重跑）</li>
+<li><strong>失败 = 重试</strong>：Pod 异常退出 → 按 <code>backoffLimit</code> 重试（默认 6 次），超限 Job 标记 <code>backoffLimit</code></li>
+<li><strong>并行</strong>：<code>parallelism</code> 控制同时跑几个 Pod（如 10 个任务并发 3 个）</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>kubectl<span class="w"> </span>create<span class="w"> </span>job<span class="w"> </span>my-job<span class="w"> </span>--image<span class="o">=</span>busybox<span class="w"> </span>--<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s2">"echo done"</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>kubectl<span class="w"> </span>get<span class="w"> </span>job<span class="w">          </span><span class="c1"># COMPLETIONS 1/1、STATUS Completed</span>
+</code></pre></div>
+<blockquote>
+<p>⚠️ <strong>生产必配：<code>ttlSecondsAfterFinished</code>（完成后自动清理）</strong>——不配置的话，<strong>已完成的 Job 及其 Pod 会无限堆积</strong>（CronJob 每天跑一次 → 一年 365 个历史 Job 残留），导致 etcd 性能衰退。声明自动清理：</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">ttlSecondsAfterFinished</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3600</span><span class="w">   </span><span class="c1"># Job 完成 1 小时后自动删除（含其 Pod）</span>
+</code></pre></div>
+<blockquote>
+<p>CronJob 场景还可以配合 <code>successfulJobsHistoryLimit</code> / <code>successfulJobsHistoryLimit</code>（第 5.5.2 节）限制历史记录数量——<strong>任务型负载的"垃圾回收"是生产必做项</strong>。</p>
+</blockquote>
+<p>典型场景：数据迁移、批量处理、初始化任务、CI 中的一次性步骤。</p>
+<h3 id="552-cronjob-job">5.5.2 CronJob：定时触发 Job<a class="headerlink" href="#552-cronjob-job" title="Permanent link">&para;</a></h3>
+<p><strong>CronJob 按 cron 表达式定时创建 Job</strong>（cron 语法：<code>分 时 日 月 周</code>）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">schedule</span><span class="p">:</span><span class="w"> </span><span class="s">"0</span><span class="nv"> </span><span class="s">2</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*"</span><span class="w">     </span><span class="c1"># 每天凌晨 2 点</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nt">schedule</span><span class="p">:</span><span class="w"> </span><span class="s">"*/5</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*"</span><span class="w">   </span><span class="c1"># 每 5 分钟</span>
+</code></pre></div>
+<p>关键配置：</p>
+<ul>
+<li><strong>并发策略</strong>：<code>concurrencyPolicy</code>——<code>concurrencyPolicy</code>（允许并发）/<code>concurrencyPolicy</code>（上次没跑完就不起新的）/<code>concurrencyPolicy</code>（替换上次）</li>
+<li><strong>历史保留</strong>：<code>successfulJobsHistoryLimit</code> / <code>successfulJobsHistoryLimit</code>（保留多少次记录，防 etcd 膨胀）</li>
+<li><strong>时区</strong>：<code>timeZone</code> 指定（默认按节点时区）</li>
+</ul>
+<p>典型场景：定时备份、定时清理、定时报表。</p>
+<h3 id="553-vs-restartpolicy">5.5.3 任务型 vs 服务型（restartPolicy 的关键差异）<a class="headerlink" href="#553-vs-restartpolicy" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>服务型（Deployment 等）</th>
+<th>任务型（Job/CronJob）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>期望状态</td>
+<td>容器<strong>一直运行</strong></td>
+<td>容器<strong>跑完退出</strong></td>
+</tr>
+<tr>
+<td>restartPolicy</td>
+<td>Always（退出就重启）</td>
+<td><strong>OnFailure / Never</strong>（跑完别重启）</td>
+</tr>
+<tr>
+<td>成功标志</td>
+<td>Running</td>
+<td><strong>Completed（exit 0）</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>为什么 Job 的 Pod 不能配 Always</strong>：Always 意味着"退出就重启"——任务跑完了还会被拉起来重跑，永远完不成。Job 语义要求"退出即结束"。</p>
+</blockquote>
+<hr />
+<h2 id="56">5.6 控制器选择总决策树（走查实例）<a class="headerlink" href="#56" title="Permanent link">&para;</a></h2>
+<p>把本章所有控制器放进一个决策流程，用两个真实应用走一遍：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>新应用上线，先问：
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>① 它是"长期服务"还是"跑一次/定时"？
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>   ├─ 跑一次 → Job（backoffLimit 控制重试）
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>   ├─ 定时 → CronJob（schedule + 并发策略）
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>   └─ 长期服务 → 问 ②
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>② 每个节点都需要吗？
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>   ├─ 是（CNI/监控/日志）→ DaemonSet
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>   └─ 否 → 问 ③
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>③ 应用有"身份"吗（名字/存储要固定）？
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>   ├─ 是（数据库/消息队列）→ StatefulSet
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>   └─ 否（Web/API/网关）→ Deployment
+</code></pre></div>
+<p><strong>实例 1：WordPress 站点</strong>——无状态 Web（WordPress）+ 有状态数据库（MySQL）：</p>
+<ul>
+<li>WordPress 前端 → <strong>Deployment</strong>（多副本、可滚动更新、挂共享卷存上传文件）</li>
+<li>MySQL → <strong>StatefulSet</strong>（稳定标识 <code>mysql-0</code>、独立 PVC 存数据、有序启动）——生产建议</li>
+</ul>
+<p><strong>实例 2：监控体系</strong>：</p>
+<ul>
+<li>node-exporter（每节点采集指标）→ <strong>DaemonSet</strong></li>
+<li>每日凌晨备份数据库 → <strong>CronJob</strong>（<code>0 2 * * *</code>）</li>
+<li>一次性数据迁移 → <strong>Job</strong></li>
+</ul>
+<blockquote>
+<p>这个决策树是 CKA 工作负载题的<strong>答题骨架</strong>——看到场景先分类，再选控制器。</p>
+</blockquote>
+<hr />
+<h2 id="57">5.7 实验演练指引<a class="headerlink" href="#57" title="Permanent link">&para;</a></h2>
+<p>本章机制对应实验 <strong>03「工作负载」</strong>（6 个 Lab）：</p>
+<ul>
+<li><strong>Lab 1 使用 deployment 维护服务数量</strong>：副本/自愈/扩缩容——<code>kubectl scale</code> 改期望值，亲眼看到"删了自动补"</li>
+<li><strong>Lab 2 滚动更新与回滚</strong>：<code>kubectl set image</code> 更新 → <code>kubectl set image</code>——maxUnavailable/maxSurge 默认值的观察</li>
+<li><strong>Lab 3 StatefulSet</strong>：webserver-0/1/2 的稳定命名与 headless DNS——有序部署的观察</li>
+<li><strong>Lab 4 Job</strong>：<code>Completed</code> 状态与 <code>Completed</code> 查看任务输出</li>
+<li><strong>Lab 5 CronJob</strong>：<code>*/1 * * * *</code> 每分钟触发，<code>*/1 * * * *</code> 看调度记录</li>
+<li><strong>Lab 6 DaemonSet</strong>：<code>kubectl get pods -o wide</code> 看"每节点一个"的分布</li>
+</ul>
+<blockquote>
+<p>教学建议：每个 Lab 做完回到本章对应小节对照"机制 → 现象"——例如 Lab 2 的滚动更新观察点，就是 §5.2.3 的节奏图；Lab 3 的 <code>webserver-0</code> 命名，就是 §5.3.2 的稳定标识。</p>
+</blockquote>
+<hr />
+<h2 id="_2">本章小结<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>为什么需要控制器</strong>：裸 Pod 不自愈、不扩缩、不更新——控制器通过控制循环"维持期望状态"</li>
+<li><strong>共同骨架</strong>：selector（管哪些）+ template（长什么样）+ replicas（几个）+ 控制循环</li>
+<li><strong>Deployment</strong>：三层结构（Deployment→ReplicaSet→Pod，RS 为回滚而生）；滚动更新用 maxUnavailable/maxSurge 控节奏（<strong>readinessProbe 是零中断的前提</strong>）；rollout undo 一键回滚</li>
+<li><strong>StatefulSet</strong>：解决有状态三难题——稳定有序命名（web-0）、独立 PVC（volumeClaimTemplates）、有序部署/更新</li>
+<li><strong>DaemonSet</strong>：按节点分布（每节点一个），新节点自动补——CNI/监控/日志的标配</li>
+<li><strong>Job/CronJob</strong>：成功 = Completed（exit 0）；restartPolicy 必须 OnFailure/Never；CronJob 定时触发 + 并发策略</li>
+<li><strong>选型决策树</strong>：任务→Job/CronJob；每节点→DaemonSet；有身份→StatefulSet；其余→Deployment</li>
+</ul>
+<p><strong>衔接</strong>：第 6 章讲"Pod 落在哪个节点"——调度器与调度策略（nodeSelector/亲和/污点容忍/drain/PDB），届时 DaemonSet 的"控制面不上"之谜会解开。</p>
+<h2 id="_3">思考题<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<ol>
+<li>为什么 Deployment 要隔一层 ReplicaSet？没有它，回滚怎么实现？</li>
+<li>滚动更新时 <code>maxUnavailable: 0</code> 意味着什么代价？（提示：更新期间副本数会怎样）</li>
+<li>新 Pod 没配 readinessProbe，滚动更新会有什么风险？</li>
+<li>StatefulSet 的 Pod 删了重建，为什么名字还是 web-1？数据还在吗？（提示：稳定标识 + volumeClaimTemplates）</li>
+<li>为什么 Job 的 Pod 不能配 restartPolicy: Always？</li>
+<li>用决策树判断：一个"每节点都要采集系统指标"的组件和"每天凌晨清理临时文件"的任务，分别用什么控制器？</li>
+</ol>
+<blockquote>
+<p><strong>CKA 考点标注</strong>（对应域 2：工作负载与调度 15%）：
+- <strong>必考操作</strong>：<code>kubectl scale</code>、<code>kubectl scale</code>、<code>kubectl scale</code>、<code>kubectl scale</code>
+- <strong>必考机制</strong>：滚动更新（maxUnavailable/maxSurge）、回滚原理（RS 历史）、StatefulSet 稳定标识（headless + PVC 模板）、Job 的 Completed 语义与 backoffLimit、CronJob 并发策略
+- <strong>必考选型</strong>：控制器决策树（场景 → 类型）——CKA 场景题常考
+- 排障关联（域 5）：更新后 CrashLoop → <code>rollout undo</code> 快速恢复</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 · CC BY-NC-ND 4.0 · Kubernetes 容器云原生实战课程
+    </div>
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "navigation.expand", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@11/dist/mermaid.min.js"></script>
+      
+    
+  </body>
+</html>
